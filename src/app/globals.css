@@ -6,57 +6,57 @@
 
 @layer base {
   :root {
-    --background: 190 65% 97%;       /* Foam white with ocean tint */
-    --foreground: 239 84% 20%;       /* Deep navy ink */
+    --background: 53 100% 96.9%;     /* Lightyellow #fffdef */
+    --foreground: 60 4% 11%;         /* Near Black, slightly lifted */
 
-    --card: 190 60% 98.5%;
-    --card-foreground: 239 84% 20%;
+    --card: 53 60% 95%;              /* Synced to Lightyellow family */
+    --card-foreground: 60 4% 11%;
 
-    --popover: 190 60% 98.5%;
-    --popover-foreground: 239 84% 20%;
+    --popover: 53 60% 95%;
+    --popover-foreground: 60 4% 8%;
 
-    --primary: 201 100% 36%;         /* Azure #0077b6 */
-    --primary-foreground: 0 0% 100%;
+    --primary: 201 100% 36%;         /* BIS azure #0077b6 (was terracotta) */
+    --primary-foreground: 43 29% 97%;
     --primary-hover: 201 100% 29%;
     --primary-light: 190 77% 91%;
     --primary-dark: 239 84% 28%;
 
-    --secondary: 190 100% 42%;       /* Cyan #00b4d8 */
-    --secondary-foreground: 239 84% 18%;
+    --secondary: 40 8% 50%;          /* Stone Gray #87867f */
+    --secondary-foreground: 43 29% 97%;
 
-    --muted: 190 55% 90%;
-    --muted-foreground: 201 45% 34%;
+    --muted: 53 40% 90%;             /* Synced to Lightyellow family */
+    --muted-foreground: 50 4% 32%;   /* Olive Gray, deeper */
 
-    --accent: 190 77% 88%;           /* Pale #caf0f8 */
-    --accent-foreground: 239 84% 20%;
+    --accent: 40 14% 90%;
+    --accent-foreground: 60 4% 8%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 190 45% 82%;
-    --input: 190 45% 82%;
-    --ring: 190 100% 42%;
+    --border: 53 30% 85%;            /* Synced to Lightyellow family */
+    --input: 53 30% 85%;
+    --ring: 201 100% 36%;
 
     --radius: 0.75rem;
 
-    --success: 172 66% 36%;
-    --warning: 32 95% 50%;
+    --success: 142 76% 36%;
+    --warning: 23 90% 50%;
 
     /* Source badge colors */
     --source-bis: 201 100% 36%;
     --source-iso: 190 100% 38%;
     --source-iec: 239 70% 50%;
 
-    --surface-low: 190 60% 93%;
-    --surface-high: 190 55% 89%;
+    --surface-low: 53 50% 92%;
+    --surface-high: 53 40% 89%;
 
-    /* Brand tokens */
-    --brand: 201 100% 36%;
-    --navy: 239 94% 19%;
-    --steel: 200 20% 52%;
-    --foam: 190 70% 96%;
-    --mist: 190 65% 97%;
-    --ink: 239 84% 20%;
+    /* Journal-specific tokens */
+    --terracotta: 201 100% 36%;
+    --olive-gray: 50 3% 37%;
+    --stone-gray: 40 8% 50%;
+    --ivory: 43 29% 97%;
+    --parchment: 53 100% 96.9%;
+    --near-black: 60 4% 8%;
 
     /* Font families (swapped by JS for Classic/Modern) */
     --font-heading: 'Playfair Display', Georgia, serif;
@@ -64,53 +64,53 @@
   }
 
   .dark {
-    --background: 239 70% 12%;       /* Deep navy night */
-    --foreground: 190 60% 90%;
+    --background: 40 5% 10%;
+    --foreground: 40 10% 88%;
 
-    --card: 239 65% 15%;
-    --card-foreground: 190 60% 90%;
+    --card: 40 5% 13%;
+    --card-foreground: 40 10% 88%;
 
-    --popover: 239 65% 17%;
-    --popover-foreground: 190 60% 90%;
+    --popover: 40 5% 15%;
+    --popover-foreground: 40 10% 88%;
 
-    --primary: 190 100% 55%;         /* Bright cyan on navy */
-    --primary-foreground: 239 84% 14%;
-    --primary-hover: 190 100% 62%;
-    --primary-light: 239 60% 22%;
-    --primary-dark: 190 80% 75%;
+    --primary: 190 85% 68%;          /* Pale cyan (was light terracotta) */
+    --primary-foreground: 40 5% 10%;
+    --primary-hover: 190 85% 74%;
+    --primary-light: 200 60% 20%;
+    --primary-dark: 190 70% 75%;
 
-    --secondary: 201 85% 55%;
-    --secondary-foreground: 239 84% 12%;
+    --secondary: 40 8% 65%;
+    --secondary-foreground: 40 5% 10%;
 
-    --muted: 239 50% 20%;
-    --muted-foreground: 190 30% 70%;
+    --muted: 40 5% 18%;
+    --muted-foreground: 40 8% 65%;
 
-    --accent: 239 55% 22%;
-    --accent-foreground: 190 60% 90%;
+    --accent: 40 5% 16%;
+    --accent-foreground: 40 10% 88%;
 
     --destructive: 3 100% 70%;
     --destructive-foreground: 3 100% 15%;
 
-    --border: 200 40% 26%;
-    --input: 200 40% 26%;
-    --ring: 190 100% 55%;
+    --border: 40 5% 22%;
+    --input: 40 5% 22%;
+    --ring: 190 85% 68%;
 
-    --success: 172 60% 45%;
-    --warning: 32 90% 60%;
+    --success: 142 64% 40%;
+    --warning: 23 88% 60%;
 
     --source-bis: 190 100% 55%;
     --source-iso: 190 100% 62%;
     --source-iec: 239 85% 72%;
 
-    --surface-low: 239 65% 13%;
-    --surface-high: 239 60% 18%;
+    --surface-low: 40 5% 12%;
+    --surface-high: 40 5% 17%;
 
-    --brand: 190 100% 55%;
-    --navy: 239 94% 19%;
-    --steel: 200 15% 60%;
-    --foam: 239 60% 16%;
-    --mist: 239 70% 12%;
-    --ink: 190 60% 92%;
+    --terracotta: 190 85% 68%;
+    --olive-gray: 40 8% 65%;
+    --stone-gray: 40 8% 55%;
+    --ivory: 40 5% 13%;
+    --parchment: 40 5% 10%;
+    --near-black: 40 10% 88%;
   }
 }
 
@@ -154,7 +154,7 @@
   }
 }
 
-/* Custom scrollbar - subtle, mist-friendly */
+/* Custom scrollbar - subtle, parchment-friendly */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -232,22 +232,22 @@ html, body {
 /* Prose overrides for journal feel */
 .prose-journal {
   line-height: 1.7;
-  color: hsl(var(--steel));
+  color: hsl(var(--olive-gray));
 }
 .prose-journal strong {
-  color: hsl(var(--ink));
+  color: hsl(var(--near-black));
   font-weight: 600;
 }
 .prose-journal ol > li::marker {
-  color: hsl(var(--brand));
+  color: hsl(var(--terracotta));
   font-weight: 600;
 }
 .prose-journal ul > li::marker {
-  color: hsl(var(--brand));
+  color: hsl(var(--terracotta));
 }
 .prose-journal h1, .prose-journal h2, .prose-journal h3 {
   font-family: var(--font-heading);
-  color: hsl(var(--ink));
+  color: hsl(var(--near-black));
 }
 
 /* ═══ Settings Layout ═══ */
