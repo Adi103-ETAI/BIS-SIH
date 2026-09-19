@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import "../index.css";
+import "./globals.css";
 import Layout from "@/components/Layout";
 import Providers from "./providers";
 

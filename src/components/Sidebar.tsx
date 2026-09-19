@@ -163,7 +163,7 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
               className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-all duration-300 hover:bg-muted/50 ${isOpen ? '' : 'justify-center'}`}
             >
               <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-border/50">
-                <img src={(avatar1 as { src: string }).src} alt="User" className="w-full h-full object-cover" />
+                <img src={avatar1.src} alt="User" className="w-full h-full object-cover" />
               </div>
               <div className={`flex-1 min-w-0 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0 hidden'}`}>
                 <p className="text-[13px] font-medium text-foreground truncate leading-tight">SentArc Labs</p>

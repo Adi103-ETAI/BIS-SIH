@@ -32,14 +32,7 @@ import avatar4 from "@/assets/avatar_4.png";
 import avatar5 from "@/assets/avatar_5.png";
 import avatar6 from "@/assets/avatar_6.png";
 
-const AVATARS = [
-  (avatar1 as { src: string }).src,
-  (avatar2 as { src: string }).src,
-  (avatar3 as { src: string }).src,
-  (avatar4 as { src: string }).src,
-  (avatar5 as { src: string }).src,
-  (avatar6 as { src: string }).src,
-];
+const AVATARS = [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6];
 
 const GeneralTab = () => {
   const { toast } = useToast();
@@ -61,7 +54,7 @@ const GeneralTab = () => {
     specialization: "Cardiology",
     experience: "15+",
     country: "India",
-    avatarImg: (avatar1 as { src: string }).src,
+    avatarImg: avatar1,
   });
 
   // Toggles State
@@ -152,7 +145,7 @@ const GeneralTab = () => {
             <Label className="text-base text-muted-foreground">Full name</Label>
             <div className="flex items-center gap-3 px-4 py-2 bg-muted/40 border border-border/30 rounded-md focus-within:ring-1 focus-within:ring-ring transition-all">
               <div className="w-8 h-8 rounded-full overflow-hidden bg-muted shrink-0">
-                <img src={profile.avatarImg} alt="Avatar" className="w-full h-full object-cover" />
+                <img src={profile.avatarImg.src} alt="Avatar" className="w-full h-full object-cover" />
               </div>
               <input
                 value={profile.name}
@@ -219,7 +212,7 @@ const GeneralTab = () => {
                       <div className="grid grid-cols-6 gap-2">
                         {AVATARS.map((src) => (
                           <button
-                            key={src}
+                            key={src.src}
                             type="button"
                             onClick={() => setProfile({ ...profile, avatarImg: src })}
                             className={`relative w-full aspect-square rounded-xl overflow-hidden transition-all duration-200 border-2 ${
@@ -228,7 +221,7 @@ const GeneralTab = () => {
                                 : "border-border/50 opacity-70 hover:opacity-100 hover:border-primary/40 hover:scale-105"
                             }`}
                           >
-                            <img src={src} alt="Avatar option" className="w-full h-full object-cover" />
+                            <img src={src.src} alt="Avatar option" className="w-full h-full object-cover" />
                             {profile.avatarImg === src && (
                               <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
                                 <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
