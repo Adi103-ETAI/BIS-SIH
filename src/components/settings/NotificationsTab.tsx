@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 const NotificationsTab = () => {
   const { toast } = useToast();
   const [digestFreq, setDigestFreq] = useState("weekly");
-  const [sources, setSources] = useState({ icmr: true, cdc: true, who: true, nice: false });
+  const [sources, setSources] = useState({ bis: true, iso: true, iec: true });
   const [alerts, setAlerts] = useState({ newCitations: true, guidelineUpdates: true, vaultMatches: false });
   const [quietHours, setQuietHours] = useState(true);
   const [quietStart, setQuietStart] = useState("22");
@@ -49,12 +49,11 @@ const NotificationsTab = () => {
             </Select>
           </div>
           <div className="space-y-3 pt-3 border-t border-border/30">
-            <Label>Guidance sources</Label>
+            <Label>Standards sources</Label>
             {([
-              { key: "icmr", label: "ICMR (India)", desc: "Indian Council of Medical Research" },
-              { key: "cdc", label: "CDC (USA)", desc: "Centers for Disease Control and Prevention" },
-              { key: "who", label: "WHO (Global)", desc: "World Health Organization" },
-              { key: "nice", label: "NICE (UK)", desc: "National Institute for Health and Care Excellence" },
+              { key: "bis", label: "BIS (India)", desc: "Bureau of Indian Standards" },
+              { key: "iso", label: "ISO (Global)", desc: "International Organization for Standardization" },
+              { key: "iec", label: "IEC (Global)", desc: "International Electrotechnical Commission" },
             ] as const).map((s) => (
               <div key={s.key} className="flex items-center justify-between">
                 <div>
@@ -75,14 +74,14 @@ const NotificationsTab = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-foreground">New citations matching saved queries</p>
-              <p className="text-xs text-muted-foreground">When fresh papers match your vault topics.</p>
+              <p className="text-xs text-muted-foreground">When newly published standards match your vault topics.</p>
             </div>
             <Switch checked={alerts.newCitations} onCheckedChange={(c) => setAlerts({ ...alerts, newCitations: c })} />
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-foreground">Guideline updates in your specialty</p>
-              <p className="text-xs text-muted-foreground">Major revisions to clinical guidelines.</p>
+              <p className="text-sm font-medium text-foreground">Standards updates in your sector</p>
+              <p className="text-xs text-muted-foreground">New and revised Indian Standards.</p>
             </div>
             <Switch checked={alerts.guidelineUpdates} onCheckedChange={(c) => setAlerts({ ...alerts, guidelineUpdates: c })} />
           </div>

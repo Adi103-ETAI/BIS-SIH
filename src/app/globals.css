@@ -43,13 +43,9 @@
     --warning: 32 95% 50%;
 
     /* Source badge colors */
-    --source-pubmed: 201 90% 45%;
-    --source-cochrane: 262 60% 50%;
-    --source-who: 190 100% 38%;
-    --source-cdc: 340 65% 47%;
-    --source-statpearls: 160 55% 38%;
-    --source-icmr: 239 70% 45%;
-    --source-nmc: 25 85% 50%;
+    --source-bis: 201 100% 36%;
+    --source-iso: 190 100% 38%;
+    --source-iec: 239 70% 50%;
 
     --surface-low: 190 60% 93%;
     --surface-high: 190 55% 89%;
@@ -102,13 +98,9 @@
     --success: 172 60% 45%;
     --warning: 32 90% 60%;
 
-    --source-pubmed: 201 90% 65%;
-    --source-cochrane: 262 70% 72%;
-    --source-who: 190 100% 60%;
-    --source-cdc: 340 70% 68%;
-    --source-statpearls: 160 60% 55%;
-    --source-icmr: 239 80% 72%;
-    --source-nmc: 25 80% 62%;
+    --source-bis: 190 100% 55%;
+    --source-iso: 190 100% 62%;
+    --source-iec: 239 85% 72%;
 
     --surface-low: 239 65% 13%;
     --surface-high: 239 60% 18%;

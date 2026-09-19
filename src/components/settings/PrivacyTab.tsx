@@ -36,7 +36,7 @@ const PrivacyTab = () => {
       <section>
         <h2 className="settings-section-header">Privacy</h2>
         <p className="text-sm text-muted-foreground mb-3">
-          BIS-SIH believes in transparent data practices. Learn how your information is protected when using our products.
+          BIS Chat believes in transparent data practices. Learn how your information is protected when using our products.
         </p>
         <div className="flex flex-wrap gap-x-5 gap-y-1">
           <button className="text-sm text-primary hover:underline">How we protect your data ›</button>
@@ -81,7 +81,7 @@ const PrivacyTab = () => {
           <div className="settings-row">
             <div>
               <p className="text-sm font-medium text-foreground">Product analytics</p>
-              <p className="text-xs text-muted-foreground">Help improve BIS-SIH with anonymized usage data.</p>
+              <p className="text-xs text-muted-foreground">Help improve BIS Chat with anonymized usage data.</p>
             </div>
             <Switch checked={analytics} onCheckedChange={(c) => { setAnalytics(c); toast({ title: "Saved" }); }} />
           </div>
@@ -89,8 +89,8 @@ const PrivacyTab = () => {
           {/* Anonymize */}
           <div className="settings-row">
             <div>
-              <p className="text-sm font-medium text-foreground">Anonymize patient identifiers</p>
-              <p className="text-xs text-muted-foreground">Strip names, MRNs and dates from saved queries automatically.</p>
+              <p className="text-sm font-medium text-foreground">Anonymize personal identifiers</p>
+              <p className="text-xs text-muted-foreground">Strip names and contact details from saved queries automatically.</p>
             </div>
             <Switch checked={anonymize} onCheckedChange={(c) => { setAnonymize(c); toast({ title: "Saved" }); }} />
           </div>
@@ -100,7 +100,7 @@ const PrivacyTab = () => {
       {/* ── Clear history ── */}
       <section className="settings-section-divider">
         <h2 className="settings-section-header">Clear query history</h2>
-        <p className="text-sm text-muted-foreground mb-4">Permanently remove all {history.length} consultations. Vault items remain.</p>
+        <p className="text-sm text-muted-foreground mb-4">Permanently remove all {history.length} chats. Vault items remain.</p>
         <Button variant="outline" onClick={() => { clearHistory(); toast({ title: "History cleared" }); }}>
           <Trash2 className="w-4 h-4 mr-2" /> Clear all history
         </Button>

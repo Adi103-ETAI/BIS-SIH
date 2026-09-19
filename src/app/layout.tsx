@@ -5,8 +5,8 @@ import Layout from "@/components/Layout";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
-  title: "BIS-SIH",
-  description: "Clinical research assistant with cited answers",
+  title: "BIS Chat",
+  description: "BIS standards assistant with cited answers",
   icons: {
     icon: "/favicon.svg",
   },

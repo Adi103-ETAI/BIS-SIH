@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Stethoscope, Sun, Moon, Monitor } from "lucide-react";
+import { Factory, Sun, Moon, Monitor } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
@@ -40,18 +40,18 @@ const GeneralTab = () => {
   // Profile State
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [displayName, setDisplayName] = useState(() => {
-    if (typeof window === "undefined") return "Director";
-    return window.localStorage.getItem("bis-sih_display_name") || "Director";
+    if (typeof window === "undefined") return "Guest";
+    return window.localStorage.getItem("bis-sih_display_name") || "Guest";
   });
 
   useEffect(() => {
     localStorage.setItem("bis-sih_display_name", displayName);
   }, [displayName]);
   const [profile, setProfile] = useState({
-    name: "Director A",
-    email: "director@sentarc.labs",
-    role: "Doctor",
-    specialization: "Cardiology",
+    name: "BIS User",
+    email: "user@bis-chat.in",
+    role: "Consumer",
+    specialization: "Electrical & Electronics",
     experience: "15+",
     country: "India",
     avatarImg: avatar1,
@@ -155,19 +155,19 @@ const GeneralTab = () => {
             </div>
           </div>
 
-          {/* What should BIS-SIH call you? */}
+          {/* What should BIS Chat call you? */}
           <div className="space-y-2">
             <Label className="text-base text-muted-foreground">
-              What should BIS-SIH call you? <span className="text-destructive">*</span>
+              What should BIS Chat call you? <span className="text-destructive">*</span>
             </Label>
             <Input
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="e.g. Director"
+              placeholder="e.g. Aarav"
               className="bg-muted/40 border-border/30 h-12 text-base"
               onBlur={() => {
                 if (displayName.trim()) {
-                  toast({ title: "Display name saved", description: `BIS-SIH will call you "${displayName}".` });
+                  toast({ title: "Display name saved", description: `BIS Chat will call you "${displayName}".` });
                 }
               }}
             />
@@ -177,7 +177,7 @@ const GeneralTab = () => {
         {/* Tags + Edit profile */}
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium bg-primary/10 text-primary border border-primary/20">
-            <Stethoscope className="w-4 h-4" />
+            <Factory className="w-4 h-4" />
             {profile.role}
           </span>
           <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-muted text-muted-foreground">
@@ -199,7 +199,7 @@ const GeneralTab = () => {
                 <DialogHeader>
                   <DialogTitle>Edit Profile Context</DialogTitle>
                   <DialogDescription>
-                    Update your professional details to help BIS-SIH tailor clinical guidelines and ranking algorithms for your specialty.
+                    Update your professional details to help BIS Chat tailor standards and ranking algorithms for your sector.
                   </DialogDescription>
                 </DialogHeader>
 
@@ -264,17 +264,20 @@ const GeneralTab = () => {
                       >
                         <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Doctor">Doctor</SelectItem>
-                          <SelectItem value="Medical Student">Medical Student</SelectItem>
+                          <SelectItem value="Manufacturer">Manufacturer</SelectItem>
+                          <SelectItem value="Laboratory">Laboratory</SelectItem>
+                          <SelectItem value="Regulator">Regulator</SelectItem>
+                          <SelectItem value="Consumer">Consumer</SelectItem>
                           <SelectItem value="Researcher">Researcher</SelectItem>
+                          <SelectItem value="Student">Student</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Specialization</Label>
+                      <Label>Sector</Label>
                       <Input
-                        placeholder="e.g. Cardiology"
+                        placeholder="e.g. Electrical & Electronics"
                         value={profile.specialization}
                         onChange={(e) => setProfile({...profile, specialization: e.target.value})}
                       />
@@ -286,11 +289,10 @@ const GeneralTab = () => {
                         value={profile.country}
                         onValueChange={(val) => setProfile({...profile, country: val})}
                       >
-                        <SelectTrigger><SelectValue placeholder="Select diagnostic region" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="Select standards region" /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="US">US (CDC / NIH)</SelectItem>
-                          <SelectItem value="India">India (ICMR)</SelectItem>
-                          <SelectItem value="UK">UK (NICE)</SelectItem>
+                          <SelectItem value="India">India (BIS)</SelectItem>
+                          <SelectItem value="International">International (ISO / IEC)</SelectItem>
                           <SelectItem value="Global">Global / Default</SelectItem>
                         </SelectContent>
                       </Select>
@@ -415,13 +417,13 @@ const GeneralTab = () => {
           <div className="settings-row">
             <div>
               <p className="text-sm font-medium text-foreground">Response completions</p>
-              <p className="text-xs text-muted-foreground">Get notified when BIS-SIH has finished a response. Most useful for long running tasks.</p>
+              <p className="text-xs text-muted-foreground">Get notified when BIS Chat has finished a response. Most useful for long running tasks.</p>
             </div>
             <Switch
               checked={newGuidanceAlerts}
               onCheckedChange={(checked) => {
                 setNewGuidanceAlerts(checked);
-                toast({ title: "Preferences Updated", description: "Guidance alerts preference saved." });
+                toast({ title: "Preferences Updated", description: "Response alerts preference saved." });
               }}
             />
           </div>
@@ -429,7 +431,7 @@ const GeneralTab = () => {
           <div className="settings-row">
             <div>
               <p className="text-sm font-medium text-foreground">Weekly Digest</p>
-              <p className="text-xs text-muted-foreground">Get a summary of your queries and new guideline updates.</p>
+              <p className="text-xs text-muted-foreground">Get a summary of your queries and new standards updates.</p>
             </div>
             <Switch
               checked={weeklyDigest}

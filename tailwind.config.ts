@@ -68,13 +68,9 @@ export default {
           high: "hsl(var(--surface-high))",
         },
         source: {
-          pubmed: "hsl(var(--source-pubmed))",
-          cochrane: "hsl(var(--source-cochrane))",
-          who: "hsl(var(--source-who))",
-          cdc: "hsl(var(--source-cdc))",
-          statpearls: "hsl(var(--source-statpearls))",
-          icmr: "hsl(var(--source-icmr))",
-          nmc: "hsl(var(--source-nmc))",
+          bis: "hsl(var(--source-bis))",
+          iso: "hsl(var(--source-iso))",
+          iec: "hsl(var(--source-iec))",
         },
       },
       borderRadius: {

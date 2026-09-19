@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ExternalLink, Trash2, ChevronDown, Tag, X, Plus, FolderInput } from "lucide-react";
+import { Trash2, ChevronDown, Tag, X, Plus, FolderInput } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { getSourceConfig } from "@/lib/sources";
 import type { SourceType } from "@/types/api";
@@ -88,17 +88,6 @@ const VaultItemCard = ({ item, collections, onRemove, onUpdate }: VaultItemCardP
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {item.sourceType === "pubmed" && item.mongoId && (
-            <a
-              href={`https://pubmed.ncbi.nlm.nih.gov/${item.mongoId}/`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-              title="View on PubMed"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          )}
           <button
             onClick={() => onRemove(item.id, item.title)}
             className="text-muted-foreground/50 hover:text-destructive transition-colors"

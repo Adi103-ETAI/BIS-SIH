@@ -18,7 +18,7 @@ const BillingTab = () => {
 
   const plans = [
     { name: "Free", price: "$0", features: ["50 queries / month", "20 vault items", "Standard sources", "Community support"], current: false },
-    { name: "Pro", price: "$29", per: "/mo", features: ["500 queries / month", "200 vault items", "All medical sources", "Priority support", "Export to PDF"], current: true, badge: "Current" },
+    { name: "Pro", price: "$29", per: "/mo", features: ["500 queries / month", "200 vault items", "All standards sources", "Priority support", "Export to PDF"], current: true, badge: "Current" },
     { name: "Enterprise", price: "Custom", features: ["Unlimited queries", "Unlimited vault", "API access", "SSO + audit logs", "Dedicated CSM"], current: false },
   ];
 
@@ -64,7 +64,7 @@ const BillingTab = () => {
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="p-4 bg-surface-high border border-border/30 rounded-xl">
             <div className="flex items-baseline justify-between mb-2">
-              <p className="text-sm text-muted-foreground">Consultations</p>
+              <p className="text-sm text-muted-foreground">Chats</p>
               <p className="text-sm font-mono text-foreground">{queriesUsed}<span className="text-muted-foreground"> / {queriesLimit}</span></p>
             </div>
             <div className="h-2 bg-muted rounded-full overflow-hidden">

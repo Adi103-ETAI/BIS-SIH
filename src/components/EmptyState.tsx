@@ -10,7 +10,7 @@ const EmptyState = ({ onRetry }: EmptyStateProps) => {
       <SearchX className="w-10 h-10 text-secondary/50 mx-auto mb-4" />
       <p className="text-foreground font-heading text-[18px] font-medium mb-1">No results found</p>
       <p className="text-[14px] font-body text-muted-foreground mb-6">
-        Try rephrasing your question or using more specific medical terminology.
+        Try rephrasing your question or using more specific standards terminology (e.g. IS numbers).
       </p>
       <button
         onClick={onRetry}

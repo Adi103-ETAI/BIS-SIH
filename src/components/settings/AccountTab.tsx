@@ -67,7 +67,7 @@ const AccountTab = () => {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will permanently erase your profile, all consultations, vault items and subscriptions.
+                    This will permanently erase your profile, all chats, vault items and subscriptions.
                     Type <span className="font-mono font-semibold text-foreground">DELETE</span> to confirm.
                   </AlertDialogDescription>
                 </AlertDialogHeader>

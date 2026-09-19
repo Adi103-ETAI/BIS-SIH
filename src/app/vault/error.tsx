@@ -23,7 +23,7 @@ export default function Error({
         </div>
         <h3 className="text-lg font-semibold text-foreground mb-2">Failed to load vault</h3>
         <p className="text-sm text-muted-foreground max-w-sm mb-4">
-          An error occurred while loading your research vault.
+          An error occurred while loading your standards vault.
         </p>
         <Button onClick={reset} variant="default">
           Try again

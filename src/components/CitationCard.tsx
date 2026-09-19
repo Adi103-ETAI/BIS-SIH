@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ExternalLink, ChevronDown, Bookmark, BookmarkCheck } from "lucide-react";
+import { ChevronDown, Bookmark, BookmarkCheck } from "lucide-react";
 import type { Citation } from "@/types/api";
 import { getSourceConfig } from "@/lib/sources";
 import { useStore } from "@/contexts/StoreContext";
@@ -19,11 +19,6 @@ const CitationCard = ({ citation, queryContext = "" }: CitationCardProps) => {
   const source = getSourceConfig(citation.source_type);
   const saved = isInVault(citation.title, citation.chunk_text);
 
-  const pubmedUrl =
-    citation.source_type === "pubmed" && citation.mongo_id
-      ? `https://pubmed.ncbi.nlm.nih.gov/${citation.mongo_id}/`
-      : null;
-
   const handleToggleVault = () => {
     if (saved) {
       const existing = vaultItems.find(
@@ -42,7 +37,7 @@ const CitationCard = ({ citation, queryContext = "" }: CitationCardProps) => {
         queryContext,
         mongoId: citation.mongo_id,
       });
-      toast({ title: "Saved to Vault", description: `"${citation.title}" saved to your Research Vault.` });
+      toast({ title: "Saved to Vault", description: `"${citation.title}" saved to your Standards Vault.` });
     }
   };
 
@@ -69,11 +64,6 @@ const CitationCard = ({ citation, queryContext = "" }: CitationCardProps) => {
           <span className={`text-[10px] font-medium font-body px-2 py-0.5 rounded-full text-white ${source.colorClass}`}>
             {source.label}
           </span>
-          {pubmedUrl && (
-            <a href={pubmedUrl} target="_blank" rel="noopener noreferrer" className="text-secondary hover:text-foreground transition-colors">
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          )}
         </div>
       </div>
 

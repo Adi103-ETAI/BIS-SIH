@@ -5,9 +5,9 @@ import { Loader2, Search, Lightbulb, ArrowRightLeft, BookOpen, ArrowUp } from "l
 import Logo from "./Logo";
 
 const EXAMPLES = [
-  { label: "Ask for a Quick Fact", icon: Lightbulb },
-  { label: "Ask about Drug Interactions", icon: ArrowRightLeft },
-  { label: "Ask about Guidelines", icon: BookOpen },
+  { label: "Look up an IS code", icon: Lightbulb },
+  { label: "Ask about ISI certification", icon: ArrowRightLeft },
+  { label: "Ask about standards", icon: BookOpen },
 ];
 
 interface QueryZoneProps {
@@ -79,7 +79,7 @@ const QueryZone = ({ onSubmit, isLoading, hasResults }: QueryZoneProps) => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            placeholder={hasResults ? "Reply..." : "Ask a medical question..."}
+            placeholder={hasResults ? "Reply..." : "Ask about Indian Standards..."}
             className="flex-1 h-12 sm:h-14 pl-3 pr-3 text-[14px] sm:text-[15px] font-body bg-transparent text-foreground placeholder:text-secondary/50 focus:outline-none"
           />
           <button

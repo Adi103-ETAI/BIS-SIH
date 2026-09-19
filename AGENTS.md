@@ -37,7 +37,7 @@ bun run build
 
 ## Project Overview
 
-BIS-SIH is a premium AI-powered clinical intelligence platform that provides evidence-based medical answers backed by verifiable citations. It offers a research-first interface with features including multi-source medical knowledge synthesis, intelligent citations from trusted sources (PubMed, Cochrane, WHO, CDC), a research vault for saving discoveries, and flexible aesthetics with Modern and Classic design modes. Built with Next.js, React, and Tailwind CSS, it prioritizes journal-grade readability for healthcare professionals and researchers.
+BIS Chat is an AI-powered standards intelligence platform for the Bureau of Indian Standards ecosystem. It provides evidence-based answers backed by verifiable citations from Indian Standards (IS), ISO, and IEC documents. It offers a research-first interface with features including multi-source standards synthesis, intelligent citations from authoritative sources, a standards vault for saving discoveries, and flexible aesthetics with Modern and Classic design modes. Built with Next.js, React, and Tailwind CSS, it prioritizes high-legibility reading for manufacturers, laboratories, regulators, and consumers.
 
 ## Architecture
 
@@ -91,9 +91,9 @@ BIS-SIH is a premium AI-powered clinical intelligence platform that provides evi
 │  └──────────────────────────────────────────────────────┘   │
 │                           ↓                                   │
 │  ┌──────────────────────────────────────────────────────┐   │
-│  │   External Services (AI Backend, Medical APIs)      │   │
+│  │   External Services (AI Backend, Standards APIs)      │   │
 │  ├──────────────────────────────────────────────────────┤   │
-│  │ - PubMed, Cochrane, WHO, CDC, StatPearls, ICMR     │   │
+│  │ - BIS catalogue, ISO, IEC                           │   │
 │  └──────────────────────────────────────────────────────┘   │
 │                                                               │
 └─────────────────────────────────────────────────────────────┘
@@ -212,13 +212,13 @@ Test style rules:
 
 The application uses Next.js App Router (file-based routing in src/app/). All interactive components must include `"use client"` directive. API routes in src/app/api/ handle server-side logic including Server-Sent Events (SSE) streaming for real-time chat responses from external AI backends. Route Handlers use standard Web Streams API for streaming responses.
 
-## Multi-Source Medical Data Integration
+## Standards Data Integration
 
-The application fetches medical knowledge from multiple global repositories: PubMed, Cochrane Library, WHO, CDC, StatPearls, and ICMR. All external API integrations and data synthesis must preserve citation metadata from the original source. Do not strip or modify source attribution in API responses or components that display citations (CitationCard, SourcesPanel). Response formatting must maintain the structure expected by the CitationCard component and AnswerCard rendering logic.
+The application fetches standards knowledge from authoritative repositories: BIS (Indian Standards), ISO, and IEC. All external API integrations and data synthesis must preserve citation metadata from the original source. Do not strip or modify source attribution in API responses or components that display citations (CitationCard, SourcesPanel). Response formatting must maintain the structure expected by the CitationCard component and AnswerCard rendering logic.
 
-## Local Storage & Research Vault
+## Local Storage & Standards Vault
 
-The Research Vault (src/components/vault/, src/app/vault/page.tsx) persists user research data locally using browser storage or server-side session state. Do not delete or modify vault export functions (vault-export.ts) or schema without testing round-trip import/export. Vault data structure is managed by StoreContext; all vault mutations must go through the store, not direct state modifications.
+The Standards Vault (src/components/vault/, src/app/vault/page.tsx) persists user research data locally using browser storage or server-side session state. Do not delete or modify vault export functions (vault-export.ts) or schema without testing round-trip import/export. Vault data structure is managed by StoreContext; all vault mutations must go through the store, not direct state modifications.
 
 ## Pull Requests / Handoffs
 

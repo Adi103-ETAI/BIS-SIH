@@ -1,13 +1,9 @@
 import type { SourceType } from "@/types/api";
 
 const SOURCE_CONFIG: Record<SourceType, { label: string; colorClass: string }> = {
-  icmr: { label: "ICMR", colorClass: "bg-source-icmr" },
-  pubmed: { label: "PubMed", colorClass: "bg-source-pubmed" },
-  cochrane: { label: "Cochrane", colorClass: "bg-source-cochrane" },
-  who: { label: "WHO", colorClass: "bg-source-who" },
-  cdc: { label: "CDC", colorClass: "bg-source-cdc" },
-  statpearls: { label: "StatPearls", colorClass: "bg-source-statpearls" },
-  nmc: { label: "NMC", colorClass: "bg-source-nmc" },
+  bis: { label: "BIS", colorClass: "bg-source-bis" },
+  iso: { label: "ISO", colorClass: "bg-source-iso" },
+  iec: { label: "IEC", colorClass: "bg-source-iec" },
 };
 
 export function getSourceConfig(type: SourceType) {

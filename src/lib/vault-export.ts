@@ -17,10 +17,6 @@ function bibtexKey(item: VaultItem): string {
 export function vaultToBibtex(items: VaultItem[]): string {
   const entries = items.map((item) => {
     const key = bibtexKey(item);
-    const url =
-      item.sourceType === "pubmed" && item.mongoId
-        ? `https://pubmed.ncbi.nlm.nih.gov/${item.mongoId}/`
-        : "";
     const year = new Date(item.savedAt).getFullYear();
     const fields: string[] = [
       `  title = {${escapeBibtex(item.title)}}`,
@@ -28,7 +24,6 @@ export function vaultToBibtex(items: VaultItem[]): string {
       `  year = {${year}}`,
       `  note = {${escapeBibtex(item.chunkText.slice(0, 240))}${item.chunkText.length > 240 ? "..." : ""}}`,
     ];
-    if (url) fields.push(`  url = {${url}}`);
     return `@misc{${key},\n${fields.join(",\n")}\n}`;
   });
   return entries.join("\n\n") + "\n";
@@ -66,7 +61,7 @@ export function vaultToPdf(items: VaultItem[], opts?: { title?: string; collecti
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
   doc.setTextColor(40);
-  doc.text(opts?.title ?? "Research Vault Export", margin, y);
+  doc.text(opts?.title ?? "Standards Vault Export", margin, y);
   y += 24;
 
   doc.setFont("helvetica", "normal");
@@ -141,17 +136,6 @@ export function vaultToPdf(items: VaultItem[], opts?: { title?: string; collecti
       y += noteLines.length * 12 + 4;
     }
 
-    // URL
-    if (item.sourceType === "pubmed" && item.mongoId) {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.setTextColor(60, 100, 180);
-      const url = `https://pubmed.ncbi.nlm.nih.gov/${item.mongoId}/`;
-      ensureSpace(14);
-      doc.textWithLink(url, margin, y, { url });
-      y += 12;
-    }
-
     y += 14;
     // Divider between entries
     if (idx < items.length - 1) {
@@ -169,10 +153,10 @@ export function vaultToPdf(items: VaultItem[], opts?: { title?: string; collecti
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(150);
-    doc.text(`BIS-SIH Research Vault — Page ${i} of ${pageCount}`, pageWidth / 2, pageHeight - 20, {
+    doc.text(`BIS Chat Standards Vault — Page ${i} of ${pageCount}`, pageWidth / 2, pageHeight - 20, {
       align: "center",
     });
   }
 
-  doc.save(`bis-sih-vault-${new Date().toISOString().slice(0, 10)}.pdf`);
+  doc.save(`bis-chat-vault-${new Date().toISOString().slice(0, 10)}.pdf`);
 }

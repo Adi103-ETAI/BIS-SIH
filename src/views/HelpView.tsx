@@ -20,7 +20,7 @@ const HelpView = () => {
 
   const shortcuts = [
     { keys: ["Ctrl", "K"], desc: "Open quick search" },
-    { keys: ["Ctrl", "N"], desc: "New consultation" },
+    { keys: ["Ctrl", "N"], desc: "New chat" },
     { keys: ["Ctrl", "/"], desc: "Toggle sidebar" },
     { keys: ["Ctrl", "S"], desc: "Save citation to vault" },
     { keys: ["Esc"], desc: "Close any panel or dialog" },
@@ -28,19 +28,19 @@ const HelpView = () => {
   ];
 
   const faqs = [
-    { q: "How accurate are the citations?", a: "Every answer cites primary sources from peer-reviewed journals, ICMR/CDC/WHO guidelines and major textbooks. Always cross-check with the original source before clinical decisions." },
-    { q: "Can I use this for patient diagnosis?", a: "BIS-SIH is a research and reference tool, not a diagnostic device. Use it to inform your decisions but rely on your clinical judgment." },
-    { q: "How do I save sources for later?", a: "Click the bookmark icon on any citation card to save it to your Research Vault. Vault items persist across sessions." },
+    { q: "How accurate are the citations?", a: "Every answer cites official sources from Indian Standards, ISO/IEC documents and BIS publications. Always cross-check with the original standard before compliance decisions." },
+    { q: "Can I use this for product certification?", a: "BIS Chat is a research and reference tool, not a certification authority. Use it to inform your decisions, but certification is granted only by BIS through the official process." },
+    { q: "How do I save sources for later?", a: "Click the bookmark icon on any citation card to save it to your Standards Vault. Vault items persist across sessions." },
     { q: "Is my query data private?", a: "Yes. Queries are encrypted at rest, never shared with third parties, and you can export or delete all data from Privacy settings." },
-    { q: "Which medical specialties are supported?", a: "All major specialties including cardiology, neurology, oncology, pediatrics, infectious disease, psychiatry and emergency medicine." },
-    { q: "Can I get an institutional plan?", a: "Yes, contact sales for hospital-wide and academic licenses with SSO and audit logging." },
+    { q: "Which product sectors are covered?", a: "All major sectors including electrical & electronics, food & agriculture, textiles, chemicals, construction, and mechanical engineering." },
+    { q: "Can I get an institutional plan?", a: "Yes, contact sales for organization-wide licenses with SSO and audit logging." },
   ];
 
   const filtered = faqs.filter((f) => f.q.toLowerCase().includes(search.toLowerCase()) || f.a.toLowerCase().includes(search.toLowerCase()));
 
   const changelog = [
     { version: "v2.4", date: "Apr 12, 2026", items: ["Sources now open in slide-out panel", "Smooth font switching", "Fixed conversation history loading"] },
-    { version: "v2.3", date: "Apr 1, 2026", items: ["Added Research Vault for saved citations", "ICMR guideline integration"] },
+    { version: "v2.3", date: "Apr 1, 2026", items: ["Added Standards Vault for saved citations", "BIS catalogue integration"] },
     { version: "v2.2", date: "Mar 15, 2026", items: ["New BIS ocean theme", "Improved citation formatting"] },
   ];
 
@@ -66,7 +66,7 @@ const HelpView = () => {
           <h1 className="text-2xl sm:text-3xl font-heading font-bold tracking-tight text-foreground">
             Help &amp; Support
           </h1>
-          <p className="text-sm text-muted-foreground mt-1 max-w-2xl">Guides, shortcuts and direct support for clinical professionals.</p>
+          <p className="text-sm text-muted-foreground mt-1 max-w-2xl">Guides, shortcuts and direct support for standards professionals.</p>
         </div>
       </div>
 
@@ -78,7 +78,7 @@ const HelpView = () => {
           </div>
           <div className="grid sm:grid-cols-3 gap-3">
             {[
-              { n: "1", t: "Ask a clinical question", d: "Be specific: include patient context, demographics and what you want to know." },
+              { n: "1", t: "Ask a standards question", d: "Be specific: include the IS number, product category and what you want to know." },
               { n: "2", t: "Review the cited sources", d: "Click superscripts or the Sources button to inspect every reference." },
               { n: "3", t: "Save to your vault", d: "Bookmark high-value citations so they're one click away later." },
             ].map((s) => (

@@ -38,7 +38,7 @@ const AnswerCard = ({ data, onRegenerate, onOpenSources }: AnswerCardProps) => {
     const shareText = `${data.query}\n\n${data.answer}`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: "BIS-SIH Answer", text: shareText });
+        await navigator.share({ title: "BIS Chat Answer", text: shareText });
       } else {
         await navigator.clipboard.writeText(shareText);
         toast({ title: "Share link copied", description: "Answer copied to clipboard." });

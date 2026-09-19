@@ -75,7 +75,7 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
       <nav className="flex-1 overflow-x-hidden overflow-y-auto pt-4 pb-3 flex flex-col gap-1 custom-scrollbar">
         <div className="px-2 flex flex-col gap-0.5">
           <button
-            title="New Consultation"
+            title="New Chat"
             onClick={() => {
               router.push("/?new=1");
               if (isMobile) toggleSidebar();
@@ -85,10 +85,10 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
             }`}
           >
             <LayoutDashboard className="w-[18px] h-[18px] shrink-0" />
-            <span className={`whitespace-nowrap transition-all duration-300 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>New Consultation</span>
+            <span className={`whitespace-nowrap transition-all duration-300 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>New Chat</span>
           </button>
           <AppLink
-            title="Research Vault"
+            title="Standards Vault"
             href="/vault"
             onClick={() => isMobile && toggleSidebar()}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-body font-medium transition-all duration-300 overflow-hidden ${
@@ -96,7 +96,7 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
             }`}
           >
             <BookOpen className="w-[18px] h-[18px] shrink-0" />
-            <span className={`whitespace-nowrap transition-all duration-300 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>Research Vault</span>
+            <span className={`whitespace-nowrap transition-all duration-300 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>Standards Vault</span>
           </AppLink>
         </div>
 

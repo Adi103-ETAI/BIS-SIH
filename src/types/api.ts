@@ -1,4 +1,4 @@
-export type SourceType = "icmr" | "pubmed" | "cochrane" | "who" | "cdc" | "statpearls" | "nmc";
+export type SourceType = "bis" | "iso" | "iec";
 
 export interface Citation {
   index: number;

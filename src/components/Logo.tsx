@@ -47,7 +47,7 @@ interface LogoProps {
   variant?: "home" | "header" | "sidebar";
 }
 
-// ─── BIS mark: a clinical pulse on deep-navy → azure ───
+// ─── BIS mark: a standards-certification hexagon seal ───
 const BisMark: React.FC<{ className?: string }> = ({ className }) => {
   const gradientId = `bis-mark-${useId().replace(/:/g, "")}`;
   return (
@@ -55,7 +55,7 @@ const BisMark: React.FC<{ className?: string }> = ({ className }) => {
       viewBox="0 0 48 48"
       className={className}
       role="img"
-      aria-label="BIS-SIH mark"
+      aria-label="BIS Chat mark"
     >
       <defs>
         <linearGradient
@@ -70,12 +70,15 @@ const BisMark: React.FC<{ className?: string }> = ({ className }) => {
           <stop offset="1" stopColor="#0077b6" />
         </linearGradient>
       </defs>
-      <rect x="2" y="2" width="44" height="44" rx="12" fill={`url(#${gradientId})`} />
+      <polygon
+        points="24,3 42,13.5 42,34.5 24,45 6,34.5 6,13.5"
+        fill={`url(#${gradientId})`}
+      />
       <polyline
-        points="8,28 17,28 21,17 26,37 30,23 33,28 40,28"
+        points="16,24.5 22,30.5 32,18.5"
         fill="none"
         stroke="#caf0f8"
-        strokeWidth="3.5"
+        strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -86,8 +89,8 @@ const BisMark: React.FC<{ className?: string }> = ({ className }) => {
 // ─── Classic wordmark (serif journal feel) ───
 const ClassicWordmark: React.FC<{ className: string }> = ({ className }) => (
   <div className={`font-heading tracking-tight leading-none flex items-baseline ${className}`}>
-    <span className="text-foreground font-normal">BIS</span>
-    <span className="text-foreground font-bold">-SIH</span>
+    <span className="text-foreground font-bold">BIS</span>
+    <span className="text-foreground font-normal">&nbsp;Chat</span>
     <span className="ml-[0.3em] w-[0.28em] h-[0.28em] rounded-full bg-primary self-center"></span>
   </div>
 );
@@ -99,7 +102,7 @@ const ModernWordmark: React.FC<{ className: string }> = ({ className }) => (
       className="text-foreground"
       style={{
         fontFamily: "'Futura', 'Century Gothic', 'Montserrat', sans-serif",
-        fontWeight: 300,
+        fontWeight: 600,
       }}
     >
       BIS
@@ -108,10 +111,10 @@ const ModernWordmark: React.FC<{ className: string }> = ({ className }) => (
       className="text-foreground"
       style={{
         fontFamily: "'Futura', 'Century Gothic', 'Montserrat', sans-serif",
-        fontWeight: 600,
+        fontWeight: 300,
       }}
     >
-      -SIH
+      &nbsp;Chat
     </span>
     <span className="ml-[0.3em] w-[0.28em] h-[0.28em] rounded-full bg-primary self-center"></span>
   </div>

@@ -21,13 +21,9 @@ import { vaultToBibtex, vaultToPdf, downloadFile } from "@/lib/vault-export";
 
 const SOURCE_FILTERS: { value: string; label: string }[] = [
   { value: "all", label: "All Sources" },
-  { value: "icmr", label: "ICMR" },
-  { value: "pubmed", label: "PubMed" },
-  { value: "cochrane", label: "Cochrane" },
-  { value: "who", label: "WHO" },
-  { value: "cdc", label: "CDC" },
-  { value: "statpearls", label: "StatPearls" },
-  { value: "nmc", label: "NMC" },
+  { value: "bis", label: "BIS" },
+  { value: "iso", label: "ISO" },
+  { value: "iec", label: "IEC" },
 ];
 
 const VaultView = () => {
@@ -98,7 +94,7 @@ const VaultView = () => {
 
   const handleExportBibtex = () => {
     const bib = vaultToBibtex(filteredItems);
-    downloadFile("bis-sih-vault.bib", bib, "application/x-bibtex");
+    downloadFile("bis-chat-vault.bib", bib, "application/x-bibtex");
     toast({ title: "BibTeX exported", description: `${filteredItems.length} citations exported.` });
   };
 
@@ -159,7 +155,7 @@ const VaultView = () => {
                 </div>
                 <div className="min-w-0">
                   <h1 className="text-xl sm:text-2xl font-heading font-semibold tracking-tight text-foreground truncate">
-                    Research Vault
+                    Standards Vault
                   </h1>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {vaultItems.length} saved citation{vaultItems.length !== 1 ? "s" : ""} •{" "}
@@ -279,7 +275,7 @@ const VaultView = () => {
                 </h3>
                 <p className="text-sm text-muted-foreground max-w-sm">
                   {vaultItems.length === 0
-                    ? "Save citations from clinical answers by clicking the bookmark icon on any citation card."
+                    ? "Save citations from standards answers by clicking the bookmark icon on any citation card."
                     : "Try adjusting your search, source filter, tag, or collection."}
                 </p>
               </div>
