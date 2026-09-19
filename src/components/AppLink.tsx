@@ -1,7 +1,7 @@
 "use client";
 
 import { AnchorHTMLAttributes, forwardRef } from "react";
-import { navigate } from "@/lib/router";
+import { useRouter } from "@/lib/router";
 
 interface AppLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;
@@ -9,31 +9,39 @@ interface AppLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 }
 
 const AppLink = forwardRef<HTMLAnchorElement, AppLinkProps>(
-  ({ href, onClick, replace, target, ...props }, ref) => (
-    <a
-      ref={ref}
-      href={href}
-      target={target}
-      onClick={(event) => {
-        onClick?.(event);
-        if (
-          event.defaultPrevented ||
-          event.button !== 0 ||
-          target ||
-          event.metaKey ||
-          event.altKey ||
-          event.ctrlKey ||
-          event.shiftKey
-        ) {
-          return;
-        }
+  ({ href, onClick, replace, target, ...props }, ref) => {
+    const router = useRouter();
 
-        event.preventDefault();
-        navigate(href, { replace });
-      }}
-      {...props}
-    />
-  ),
+    return (
+      <a
+        ref={ref}
+        href={href}
+        target={target}
+        onClick={(event) => {
+          onClick?.(event);
+          if (
+            event.defaultPrevented ||
+            event.button !== 0 ||
+            target ||
+            event.metaKey ||
+            event.altKey ||
+            event.ctrlKey ||
+            event.shiftKey
+          ) {
+            return;
+          }
+
+          event.preventDefault();
+          if (replace) {
+            router.replace(href);
+          } else {
+            router.push(href);
+          }
+        }}
+        {...props}
+      />
+    );
+  },
 );
 
 AppLink.displayName = "AppLink";

@@ -6,67 +6,37 @@ import IndexView from "@/views/IndexView";
 import NotFoundView from "@/views/NotFoundView";
 import SettingsView from "@/views/SettingsView";
 import VaultView from "@/views/VaultView";
-import AuthView from "@/views/AuthView";
-import ForgotPasswordView from "@/views/ForgotPasswordView";
-import ResetPasswordView from "@/views/ResetPasswordView";
 import Providers from "@/app/providers";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import { usePathname } from "@/lib/router";
 
 function AppRoute() {
   const pathname = usePathname();
 
-  if (pathname === "/auth") return <AuthView />;
-  if (pathname === "/auth/forgot-password") return <ForgotPasswordView />;
-  if (pathname === "/auth/reset-password") return <ResetPasswordView />;
-
   if (pathname === "/" || pathname === "") {
-    return (
-      <Layout>
-        <IndexView />
-      </Layout>
-    );
+    return <IndexView />;
   }
 
   if (pathname === "/vault") {
-    return (
-      <Layout>
-        <ProtectedRoute>
-          <VaultView />
-        </ProtectedRoute>
-      </Layout>
-    );
+    return <VaultView />;
   }
 
   if (pathname.startsWith("/settings")) {
-    return (
-      <Layout>
-        <ProtectedRoute>
-          <SettingsView />
-        </ProtectedRoute>
-      </Layout>
-    );
+    return <SettingsView />;
   }
 
   if (pathname === "/help") {
-    return (
-      <Layout>
-        <HelpView />
-      </Layout>
-    );
+    return <HelpView />;
   }
 
-  return (
-    <Layout>
-      <NotFoundView />
-    </Layout>
-  );
+  return <NotFoundView />;
 }
 
 export default function App() {
   return (
     <Providers>
-      <AppRoute />
+      <Layout>
+        <AppRoute />
+      </Layout>
     </Providers>
   );
 }

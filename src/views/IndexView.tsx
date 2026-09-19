@@ -13,7 +13,7 @@ import SourcesPanel from "@/components/SourcesPanel";
 import { useStore } from "@/contexts/StoreContext";
 import type { QueryResponse, Citation } from "@/types/api";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "/api";
 
 type ChatMessage = {
   id: string;
@@ -53,15 +53,10 @@ const IndexView = () => {
     setMessages((prev) => [...prev, { id: newMessageId, query, status: "loading", timestamp: Date.now() }]);
 
     try {
-      const { data: sessionData } = await import("@/integrations/supabase/client").then(m => m.supabase.auth.getSession());
-      const token = sessionData.session?.access_token;
-      const headers: Record<string, string> = { "Content-Type": "application/json" };
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-
-      const res = await fetch(`${API_BASE}/query`, {
+      const res = await fetch(`${API_BASE}/search`, {
         method: "POST",
-        headers,
-        body: JSON.stringify({ query, top_k: 8, mode: "standard" }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, top_k: 8 }),
       });
 
       if (!res.ok) {
@@ -75,7 +70,16 @@ const IndexView = () => {
         throw new Error(detail);
       }
 
-      const json: QueryResponse = await res.json();
+      const raw = await res.json();
+      const json: QueryResponse = {
+        answer: raw?.answer ?? "",
+        citations: raw?.citations ?? [],
+        chunks_retrieved: raw?.chunks_retrieved ?? 0,
+        query,
+        model: "nim",
+        mode: "standard",
+      };
+
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === newMessageId

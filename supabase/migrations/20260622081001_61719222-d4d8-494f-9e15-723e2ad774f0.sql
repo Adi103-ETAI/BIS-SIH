@@ -1,1 +1,0 @@
-REVOKE EXECUTE ON FUNCTION public.promote_dev_admin() FROM PUBLIC, anon, authenticated;

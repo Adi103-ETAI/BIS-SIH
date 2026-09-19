@@ -1,72 +1,96 @@
-# Backend Plan: Auth + User Data (Lovable Cloud)
 
-Keep FastAPI as-is for the RAG `/query` pipeline. Add Lovable Cloud for everything user-related: auth, profile, history sync, vault sync, billing/plan. FastAPI accepts requests both with and without a logged-in user during dev (no breaking change to your ingestion work).
 
-## What gets built
+## Current State Assessment
 
-### 1. Enable Lovable Cloud
-One click. Provisions Postgres + Auth + Storage + Edge Functions. No Supabase account needed, no env keys to copy.
+**Existing Pages:**
+- `/` - Main consultation chat interface
+- `/vault` - Research Vault (saved citations)
+- `/settings` - Profile, Appearance, Notifications (basic)
+- `*` - 404 Not Found
 
-### 2. Auth
-- Email + password (with verification email)
-- Google sign-in (one-click)
-- Pages: `/auth` (login + signup tabs), `/auth/reset-password`, `/auth/forgot-password`
-- Session managed via `onAuthStateChange` + `getSession()` listener in a top-level `AuthProvider`
-- Header avatar shows logged-in user; "Sign out" in user menu
-- Routes stay public for now (so dev work isn't blocked); a `<ProtectedRoute>` wrapper is added but only applied to Settings/Vault. Index/Help remain public.
+**Current Settings:**
+- Profile (name, avatar, role, specialization, region)
+- Notifications (2 simple toggles - guidance alerts, weekly digest)
+- Appearance (theme, fonts)
+- Security & Subscription buttons (currently just show toast notifications - not functional)
 
-### 3. Database tables (with RLS — every table owner-scoped)
+---
 
-```text
-profiles            id (=auth.users.id), display_name, specialty, avatar_url, created_at
-user_roles          id, user_id, role (enum: admin, user)        -- separate table, never on profiles
-query_history       id, user_id, query, response_json, created_at
-vault_items         id, user_id, collection_id?, title, chunk_text, source_type, mongo_id, score, saved_at
-collections         id, user_id, name, color, created_at
-api_keys            id, user_id, name, key_hash, last_used_at, created_at
-subscriptions       id, user_id, plan (free|pro), status, current_period_end, stripe_customer_id?
-usage_counters      id, user_id, period_start, query_count
+## Recommended Enhancements & New Pages
+
+### 1. **Security Settings Page** `/settings/security` (HIGH PRIORITY)
+You mentioned this specifically. Currently the Security button does nothing. This page needs:
+- **Password Management** - Change password, password strength indicator
+- **Two-Factor Authentication (2FA)** - TOTP setup with QR code (critical for medical data)
+- **Active Sessions** - View and revoke logged-in devices
+- **Security Log** - Recent login activity, IP addresses, device info
+- **Backup Codes** - For 2FA recovery
+
+*Why: Medical data requires heightened security standards*
+
+### 2. **Subscription & Billing Page** `/settings/billing` (HIGH PRIORITY)
+Currently just a toast. Needs:
+- **Current Plan Card** - Plan name, renewal date, status
+- **Usage Metrics** - Queries used this month, vault storage utilized
+- **Upgrade/Downgrade** - Tier comparison table (Free/Pro/Enterprise)
+- **Payment Methods** - Add/edit cards (Stripe integration ready)
+- **Invoice History** - Downloadable PDF invoices
+
+*Why: You're building a SaaS product - this is essential monetization infrastructure*
+
+### 3. **Data & Privacy Page** `/settings/privacy` (HIGH PRIORITY for medical app)
+- **Data Export** - Download all queries, vault items, history (GDPR compliance)
+- **Data Retention** - Auto-delete queries after X days setting
+- **Privacy Controls** - Opt out of analytics, anonymize data toggle
+- **Delete Account** - Full account deletion with confirmation
+
+*Why: Healthcare professionals need control over patient-related query data*
+
+### 4. **Help & Support Page** `/help` (MEDIUM PRIORITY)
+- **Quick Start Guide** - How to craft effective medical queries
+- **Keyboard Shortcuts** - Reference modal (Ctrl+K search, Ctrl+N new convo)
+- **FAQ Section** - Common questions about citations, sources, accuracy
+- **Contact Form** - Direct support ticket submission
+- **Changelog** - What's new in recent updates
+
+### 5. **Enhanced Notification Settings** `/settings/notifications` (MEDIUM)
+Expand the current 2 toggles into a full page:
+- **Email Preferences** - Digest frequency (daily/weekly/monthly), guidance sources (ICMR/CDC/WHO)
+- **Alert Types** - New citations matching saved queries, guideline updates in specialty
+- **Quiet Hours** - Do not disturb schedule
+- **Push Notifications** - Browser notification permissions
+
+### 6. **API Access Page** `/settings/api` (MEDIUM - for power users)
+- **API Keys** - Generate/revoke keys for programmatic access
+- **Usage Dashboard** - Requests per day, rate limit status
+- **Documentation Link** - API reference
+- **Webhook Configuration** - Real-time citation alerts
+
+---
+
+## Suggested Implementation Order
+
+1. **Security Settings** (password, 2FA, sessions)
+2. **Subscription/Billing** (plan management, invoices)
+3. **Privacy & Data** (export, retention, delete account)
+4. **Help Page** (shortcuts, FAQ, support)
+5. **Enhanced Notifications** (granular email preferences)
+
+---
+
+## Navigation Structure
+
+```
+Settings (current) - Profile, Appearance
+├── Security        - Password, 2FA, Sessions, Activity Log
+├── Notifications   - Granular alert preferences
+├── Billing         - Subscription, Usage, Invoices
+├── Privacy         - Data export, Retention, Delete account
+└── API Access      - Keys, Webhooks, Documentation
 ```
 
-Trigger: on `auth.users` insert → create `profiles` row + default `subscriptions` row (plan=free) + assign `user` role.
+Separate page:
+```
+Help (/help)       - FAQ, Shortcuts, Support, Changelog
+```
 
-### 4. Sync layer (replaces localStorage)
-`use-store.ts` is rewritten to read/write Cloud when logged in, and fall back to localStorage when logged out (so the app keeps working during dev). On first login, local data is migrated up to Cloud once.
-
-### 5. FastAPI ↔ Cloud bridge (dev-friendly: works both ways)
-- Frontend always sends `Authorization: Bearer <jwt>` to FastAPI **when a user is logged in**; sends nothing when logged out.
-- FastAPI middleware: if header present → verify with Supabase JWKS, attach `user_id`; if absent → mark as `anonymous` (still serves the query).
-- Per-user usage counter only increments when `user_id` is present.
-- This way you can keep hitting `/query` from anywhere during dev, and gating can be flipped on later by changing one line.
-
-### 6. Settings page wiring
-- General tab → reads/writes `profiles` (display name, specialty, avatar via Storage bucket `avatars`)
-- Account tab → email change, delete account
-- Security tab → password change, 2FA (already scaffolded UI)
-- API tab → list/create/revoke `api_keys` rows
-- Billing tab → reads `subscriptions` + `usage_counters`. Stripe integration deferred to a later plan.
-
-## What's NOT in this plan
-- Stripe billing wiring (separate plan once you're ready to charge)
-- Admin dashboard
-- Team/org features
-- Custom auth email templates (default Cloud emails are fine for dev)
-
-## Technical notes
-- Roles live in `user_roles` + `has_role(uuid, app_role)` SECURITY DEFINER function (prevents RLS recursion).
-- All RLS policies use `auth.uid() = user_id` for owner scoping.
-- FastAPI verifies JWT via `https://<project>.supabase.co/auth/v1/.well-known/jwks.json` (cache the JWKS).
-- Storage bucket `avatars` is public-read, owner-write.
-- localStorage → Cloud migration runs once per user, idempotent (checks a `migrated_at` flag in `profiles`).
-
-## Why Lovable Cloud over Convex (short)
-Native integration in Lovable: one-click enable, managed auth UI, RLS scanner, managed email, no SDK setup, no extra account. Convex would mean external account + manual SDK + separate auth provider + losing the Lovable security/email tooling. Your stack stays simpler.
-
-## Suggested build order
-1. Enable Cloud + create schema + RLS + trigger
-2. Auth pages + AuthProvider + header wiring
-3. Profile (General tab) + Storage bucket
-4. Sync layer for history + vault + collections (with localStorage fallback)
-5. FastAPI JWT verification middleware (optional header)
-6. API keys tab
-7. Subscriptions table (Stripe wiring later)

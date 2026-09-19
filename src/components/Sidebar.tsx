@@ -1,10 +1,9 @@
 "use client";
 
-import { Clock, BookOpen, Settings, LayoutDashboard, PanelLeftClose, PanelLeftOpen, Trash2, X, LogOut, LogIn } from "lucide-react";
+import { Clock, BookOpen, Settings, LayoutDashboard, PanelLeftClose, PanelLeftOpen, Trash2, X, LogOut, User } from "lucide-react";
 import AppLink from "@/components/AppLink";
 import { usePathname, useRouter } from "@/lib/router";
 import { useStore } from "@/contexts/StoreContext";
-import { useAuth } from "@/contexts/AuthContext";
 import { format, formatDistanceToNow, isThisWeek, isToday, isYesterday } from "date-fns";
 import Logo from "@/components/Logo";
 import type { HistoryEntry } from "@/hooks/use-store";
@@ -22,14 +21,7 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-  const { user, signOut } = useAuth();
   const { history, removeHistoryEntry, clearHistory } = useStore();
-
-  const displayName = (user?.user_metadata as { display_name?: string; full_name?: string } | undefined)?.display_name
-    || (user?.user_metadata as { full_name?: string } | undefined)?.full_name
-    || user?.email?.split("@")[0]
-    || "Guest";
-  const displayEmail = user?.email ?? "Not signed in";
 
   const isActive = (path: string) => pathname === path;
 
@@ -171,45 +163,29 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
               className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-all duration-300 hover:bg-muted/50 ${isOpen ? '' : 'justify-center'}`}
             >
               <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-border/50">
-                <img src={avatar1} alt="User" className="w-full h-full object-cover" />
+                <img src={(avatar1 as { src: string }).src} alt="User" className="w-full h-full object-cover" />
               </div>
               <div className={`flex-1 min-w-0 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0 hidden'}`}>
-                <p className="text-[13px] font-medium text-foreground truncate leading-tight">{displayName}</p>
-                <p className="text-[11px] text-muted-foreground truncate leading-tight mt-0.5">{user ? "Free plan" : "Not signed in"}</p>
+                <p className="text-[13px] font-medium text-foreground truncate leading-tight">SentArc Labs</p>
+                <p className="text-[11px] text-muted-foreground truncate leading-tight mt-0.5">Free plan</p>
               </div>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" side={isMobile ? "top" : "right"} className="w-56" sideOffset={12}>
             <div className="px-2 py-1.5 mb-1">
-              <p className="text-sm font-medium text-foreground truncate">{displayName}</p>
-              <p className="text-xs text-muted-foreground truncate">{displayEmail}</p>
+              <p className="text-sm font-medium text-foreground truncate">SentArc Labs</p>
+              <p className="text-xs text-muted-foreground truncate">sentarc.ai@gmail.com</p>
             </div>
             <DropdownMenuSeparator />
-            {user ? (
-              <>
-                <DropdownMenuItem onClick={() => { router.push("/settings"); if (isMobile) toggleSidebar(); }} className="cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={async () => {
-                    await signOut();
-                    toast({ title: "Signed out", description: "You have been signed out." });
-                    router.push("/");
-                  }}
-                  className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </>
-            ) : (
-              <DropdownMenuItem onClick={() => { router.push("/auth"); if (isMobile) toggleSidebar(); }} className="cursor-pointer">
-                <LogIn className="mr-2 h-4 w-4" />
-                <span>Sign in</span>
-              </DropdownMenuItem>
-            )}
+            <DropdownMenuItem onClick={() => { router.push("/settings"); if (isMobile) toggleSidebar(); }} className="cursor-pointer">
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => toast({ title: "Logged out", description: "You have been signed out." })} className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

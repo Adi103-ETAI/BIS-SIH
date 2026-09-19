@@ -107,21 +107,24 @@ const ModernTextLogo: React.FC<{ className: string }> = ({ className }) => (
 );
 
 // ─── Image-based Logo (for home/header in Modern mode) ───
+const resolveImageSrc = (value: StaticImageData | string) =>
+  typeof value === "string" ? value : value.src;
+
 const ImageLogo: React.FC<{
   className: string;
-  lightSrc: string;
-  darkSrc: string;
+  lightSrc: StaticImageData | string;
+  darkSrc: StaticImageData | string;
 }> = ({ className, lightSrc, darkSrc }) => (
   <div
     className={`relative flex items-center justify-center overflow-hidden w-[8em] h-[1.5em] ${className}`}
   >
     <img
-      src={lightSrc}
+      src={resolveImageSrc(lightSrc)}
       alt="BIS-SIH Logo"
       className="block dark:hidden absolute w-full h-auto object-center"
     />
     <img
-      src={darkSrc}
+      src={resolveImageSrc(darkSrc)}
       alt="BIS-SIH Logo"
       className="hidden dark:block absolute w-full h-auto object-center"
     />

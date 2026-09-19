@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { navigate, usePathname } from "@/lib/router";
+import { usePathname, useRouter } from "@/lib/router";
 import {
   Settings2, User, Shield, Bell, CreditCard, Lock, ChevronRight, ChevronLeft,
 } from "lucide-react";
@@ -43,6 +43,7 @@ function resolveTab(pathname: string): TabId | null {
 
 const SettingsView = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const resolved = resolveTab(pathname || "/settings");
   // On mobile we treat "/settings" (no sub-path) as the list view.
   const [activeTab, setActiveTab] = useState<TabId>(resolved ?? "general");
@@ -57,12 +58,12 @@ const SettingsView = () => {
   const handleTabChange = (tab: typeof TABS[number]) => {
     setActiveTab(tab.id);
     setMobileShowDetail(true);
-    navigate(tab.path);
+    router.push(tab.path);
   };
 
   const handleBack = () => {
     setMobileShowDetail(false);
-    navigate("/settings");
+    router.push("/settings");
   };
 
   const ActiveComponent = TAB_COMPONENTS[activeTab];
