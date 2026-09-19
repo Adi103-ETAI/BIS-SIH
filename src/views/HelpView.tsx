@@ -41,7 +41,7 @@ const HelpView = () => {
   const changelog = [
     { version: "v2.4", date: "Apr 12, 2026", items: ["Sources now open in slide-out panel", "Smooth font switching", "Fixed conversation history loading"] },
     { version: "v2.3", date: "Apr 1, 2026", items: ["Added Research Vault for saved citations", "ICMR guideline integration"] },
-    { version: "v2.2", date: "Mar 15, 2026", items: ["New parchment theme", "Improved citation formatting"] },
+    { version: "v2.2", date: "Mar 15, 2026", items: ["New BIS ocean theme", "Improved citation formatting"] },
   ];
 
   const submitSupport = (e: React.FormEvent) => {

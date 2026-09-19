@@ -6,61 +6,61 @@
 
 @layer base {
   :root {
-    --background: 53 100% 96.9%;     /* Lightyellow #fffdef */
-    --foreground: 60 4% 11%;         /* Near Black, slightly lifted */
+    --background: 190 65% 97%;       /* Foam white with ocean tint */
+    --foreground: 239 84% 20%;       /* Deep navy ink */
 
-    --card: 53 60% 95%;              /* Synced to Lightyellow family */
-    --card-foreground: 60 4% 11%;
+    --card: 190 60% 98.5%;
+    --card-foreground: 239 84% 20%;
 
-    --popover: 53 60% 95%;
-    --popover-foreground: 60 4% 8%;
+    --popover: 190 60% 98.5%;
+    --popover-foreground: 239 84% 20%;
 
-    --primary: 18 56% 52%;           /* Terracotta #c96442 */
-    --primary-foreground: 43 29% 97%;
-    --primary-hover: 18 56% 45%;
-    --primary-light: 18 40% 94%;
-    --primary-dark: 18 56% 35%;
+    --primary: 201 100% 36%;         /* Azure #0077b6 */
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 201 100% 29%;
+    --primary-light: 190 77% 91%;
+    --primary-dark: 239 84% 28%;
 
-    --secondary: 40 8% 50%;          /* Stone Gray #87867f */
-    --secondary-foreground: 43 29% 97%;
+    --secondary: 190 100% 42%;       /* Cyan #00b4d8 */
+    --secondary-foreground: 239 84% 18%;
 
-    --muted: 53 40% 90%;             /* Synced to Lightyellow family */
-    --muted-foreground: 50 4% 32%;   /* Olive Gray, deeper */
+    --muted: 190 55% 90%;
+    --muted-foreground: 201 45% 34%;
 
-    --accent: 40 14% 90%;
-    --accent-foreground: 60 4% 8%;
+    --accent: 190 77% 88%;           /* Pale #caf0f8 */
+    --accent-foreground: 239 84% 20%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 53 30% 85%;            /* Synced to Lightyellow family */
-    --input: 53 30% 85%;
-    --ring: 18 56% 52%;
+    --border: 190 45% 82%;
+    --input: 190 45% 82%;
+    --ring: 190 100% 42%;
 
     --radius: 0.75rem;
 
-    --success: 142 76% 36%;
-    --warning: 23 90% 50%;
+    --success: 172 66% 36%;
+    --warning: 32 95% 50%;
 
     /* Source badge colors */
-    --source-pubmed: 220 70% 50%;
+    --source-pubmed: 201 90% 45%;
     --source-cochrane: 262 60% 50%;
-    --source-who: 205 85% 45%;
+    --source-who: 190 100% 38%;
     --source-cdc: 340 65% 47%;
-    --source-statpearls: 150 50% 40%;
-    --source-icmr: 18 56% 52%;
+    --source-statpearls: 160 55% 38%;
+    --source-icmr: 239 70% 45%;
     --source-nmc: 25 85% 50%;
 
-    --surface-low: 53 50% 92%;
-    --surface-high: 53 40% 89%;
+    --surface-low: 190 60% 93%;
+    --surface-high: 190 55% 89%;
 
-    /* Journal-specific tokens */
-    --terracotta: 18 56% 52%;
-    --olive-gray: 50 3% 37%;
-    --stone-gray: 40 8% 50%;
-    --ivory: 43 29% 97%;
-    --parchment: 53 100% 96.9%;
-    --near-black: 60 4% 8%;
+    /* Brand tokens */
+    --brand: 201 100% 36%;
+    --navy: 239 94% 19%;
+    --steel: 200 20% 52%;
+    --foam: 190 70% 96%;
+    --mist: 190 65% 97%;
+    --ink: 239 84% 20%;
 
     /* Font families (swapped by JS for Classic/Modern) */
     --font-heading: 'Playfair Display', Georgia, serif;
@@ -68,57 +68,57 @@
   }
 
   .dark {
-    --background: 40 5% 10%;
-    --foreground: 40 10% 88%;
+    --background: 239 70% 12%;       /* Deep navy night */
+    --foreground: 190 60% 90%;
 
-    --card: 40 5% 13%;
-    --card-foreground: 40 10% 88%;
+    --card: 239 65% 15%;
+    --card-foreground: 190 60% 90%;
 
-    --popover: 40 5% 15%;
-    --popover-foreground: 40 10% 88%;
+    --popover: 239 65% 17%;
+    --popover-foreground: 190 60% 90%;
 
-    --primary: 18 56% 58%;
-    --primary-foreground: 40 5% 10%;
-    --primary-hover: 18 56% 65%;
-    --primary-light: 18 30% 18%;
-    --primary-dark: 18 40% 75%;
+    --primary: 190 100% 55%;         /* Bright cyan on navy */
+    --primary-foreground: 239 84% 14%;
+    --primary-hover: 190 100% 62%;
+    --primary-light: 239 60% 22%;
+    --primary-dark: 190 80% 75%;
 
-    --secondary: 40 8% 65%;
-    --secondary-foreground: 40 5% 10%;
+    --secondary: 201 85% 55%;
+    --secondary-foreground: 239 84% 12%;
 
-    --muted: 40 5% 18%;
-    --muted-foreground: 40 8% 65%;
+    --muted: 239 50% 20%;
+    --muted-foreground: 190 30% 70%;
 
-    --accent: 40 5% 16%;
-    --accent-foreground: 40 10% 88%;
+    --accent: 239 55% 22%;
+    --accent-foreground: 190 60% 90%;
 
     --destructive: 3 100% 70%;
     --destructive-foreground: 3 100% 15%;
 
-    --border: 40 5% 22%;
-    --input: 40 5% 22%;
-    --ring: 18 56% 58%;
+    --border: 200 40% 26%;
+    --input: 200 40% 26%;
+    --ring: 190 100% 55%;
 
-    --success: 142 64% 40%;
-    --warning: 23 88% 60%;
+    --success: 172 60% 45%;
+    --warning: 32 90% 60%;
 
-    --source-pubmed: 220 80% 70%;
-    --source-cochrane: 262 70% 70%;
-    --source-who: 205 80% 65%;
-    --source-cdc: 340 70% 65%;
-    --source-statpearls: 150 60% 55%;
-    --source-icmr: 18 56% 58%;
-    --source-nmc: 25 80% 60%;
+    --source-pubmed: 201 90% 65%;
+    --source-cochrane: 262 70% 72%;
+    --source-who: 190 100% 60%;
+    --source-cdc: 340 70% 68%;
+    --source-statpearls: 160 60% 55%;
+    --source-icmr: 239 80% 72%;
+    --source-nmc: 25 80% 62%;
 
-    --surface-low: 40 5% 12%;
-    --surface-high: 40 5% 17%;
+    --surface-low: 239 65% 13%;
+    --surface-high: 239 60% 18%;
 
-    --terracotta: 18 56% 58%;
-    --olive-gray: 40 8% 65%;
-    --stone-gray: 40 8% 55%;
-    --ivory: 40 5% 13%;
-    --parchment: 40 5% 10%;
-    --near-black: 40 10% 88%;
+    --brand: 190 100% 55%;
+    --navy: 239 94% 19%;
+    --steel: 200 15% 60%;
+    --foam: 239 60% 16%;
+    --mist: 239 70% 12%;
+    --ink: 190 60% 92%;
   }
 }
 
@@ -162,7 +162,7 @@
   }
 }
 
-/* Custom scrollbar - subtle, parchment-friendly */
+/* Custom scrollbar - subtle, mist-friendly */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -240,22 +240,22 @@ html, body {
 /* Prose overrides for journal feel */
 .prose-journal {
   line-height: 1.7;
-  color: hsl(var(--olive-gray));
+  color: hsl(var(--steel));
 }
 .prose-journal strong {
-  color: hsl(var(--near-black));
+  color: hsl(var(--ink));
   font-weight: 600;
 }
 .prose-journal ol > li::marker {
-  color: hsl(var(--terracotta));
+  color: hsl(var(--brand));
   font-weight: 600;
 }
 .prose-journal ul > li::marker {
-  color: hsl(var(--terracotta));
+  color: hsl(var(--brand));
 }
 .prose-journal h1, .prose-journal h2, .prose-journal h3 {
   font-family: var(--font-heading);
-  color: hsl(var(--near-black));
+  color: hsl(var(--ink));
 }
 
 /* ═══ Settings Layout ═══ */

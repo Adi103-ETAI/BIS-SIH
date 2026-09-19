@@ -1,14 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import homeDarkLogo from "@/assets/DarkGrey.png";
-import homeLightLogo from "@/assets/LightYellow.png";
-import headerDarkLogo from "@/assets/Head-Side.png";
-import headerLightLogo from "@/assets/Side-Head.png";
-
-type StaticImageData = {
-  src: string;
-};
+import React, { useEffect, useId, useState } from "react";
 
 export type LogoStyle = "classic" | "modern";
 
@@ -55,23 +47,53 @@ interface LogoProps {
   variant?: "home" | "header" | "sidebar";
 }
 
-// ─── Classic Logo (original GitHub - font-heading semibold, text-based) ───
-const ClassicTextLogo: React.FC<{ className: string }> = ({ className }) => (
+// ─── BIS mark: a clinical pulse on deep-navy → azure ───
+const BisMark: React.FC<{ className?: string }> = ({ className }) => {
+  const gradientId = `bis-mark-${useId().replace(/:/g, "")}`;
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      className={className}
+      role="img"
+      aria-label="BIS-SIH mark"
+    >
+      <defs>
+        <linearGradient
+          id={gradientId}
+          x1="0"
+          y1="0"
+          x2="48"
+          y2="48"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#03045e" />
+          <stop offset="1" stopColor="#0077b6" />
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width="44" height="44" rx="12" fill={`url(#${gradientId})`} />
+      <polyline
+        points="8,28 17,28 21,17 26,37 30,23 33,28 40,28"
+        fill="none"
+        stroke="#caf0f8"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+// ─── Classic wordmark (serif journal feel) ───
+const ClassicWordmark: React.FC<{ className: string }> = ({ className }) => (
   <div className={`font-heading tracking-tight leading-none flex items-baseline ${className}`}>
-    <span className="text-foreground font-normal">open</span>
-    <span className="text-foreground font-bold flex items-baseline">
-      <span>Ins</span>
-      <span className="relative inline-block">
-        <span className="absolute top-[0.12em] left-1/2 -translate-x-1/2 w-[0.22em] h-[0.22em] bg-primary rounded-full"></span>
-        <span>ı</span>
-      </span>
-      <span>ght</span>
-    </span>
+    <span className="text-foreground font-normal">BIS</span>
+    <span className="text-foreground font-bold">-SIH</span>
+    <span className="ml-[0.3em] w-[0.28em] h-[0.28em] rounded-full bg-primary self-center"></span>
   </div>
 );
 
-// ─── Modern Text Logo (Futura geometric - for sidebar in Modern mode) ───
-const ModernTextLogo: React.FC<{ className: string }> = ({ className }) => (
+// ─── Modern wordmark (geometric sans) ───
+const ModernWordmark: React.FC<{ className: string }> = ({ className }) => (
   <div className={`flex items-baseline tracking-normal ${className}`}>
     <span
       className="text-foreground"
@@ -80,55 +102,22 @@ const ModernTextLogo: React.FC<{ className: string }> = ({ className }) => (
         fontWeight: 300,
       }}
     >
-      open
+      BIS
     </span>
     <span
-      className="text-foreground relative"
+      className="text-foreground"
       style={{
         fontFamily: "'Futura', 'Century Gothic', 'Montserrat', sans-serif",
-        fontWeight: 500,
+        fontWeight: 600,
       }}
     >
-      Ins
-      <span className="relative inline-flex justify-center">
-        <span
-          className="absolute bg-primary rounded-full"
-          style={{
-            width: "0.2em",
-            height: "0.2em",
-            top: "0.08em",
-          }}
-        />
-        ı
-      </span>
-      ght
+      -SIH
     </span>
+    <span className="ml-[0.3em] w-[0.28em] h-[0.28em] rounded-full bg-primary self-center"></span>
   </div>
 );
 
-// ─── Image-based Logo (for home/header in Modern mode) ───
-const ImageLogo: React.FC<{
-  className: string;
-  lightSrc: StaticImageData;
-  darkSrc: StaticImageData;
-}> = ({ className, lightSrc, darkSrc }) => (
-  <div
-    className={`relative flex items-center justify-center overflow-hidden w-[8em] h-[1.5em] ${className}`}
-  >
-    <img
-      src={lightSrc.src}
-      alt="BIS-SIH Logo"
-      className="block dark:hidden absolute w-full h-auto object-center"
-    />
-    <img
-      src={darkSrc.src}
-      alt="BIS-SIH Logo"
-      className="hidden dark:block absolute w-full h-auto object-center"
-    />
-  </div>
-);
-
-// ─── Main Logo Component ───
+// ─── Main Logo Component (mark + wordmark lockup, scales with font-size) ───
 const Logo: React.FC<LogoProps> = ({ className = "", variant = "header" }) => {
   const [style, setStyle] = useState<LogoStyle>(getLogoStyle);
 
@@ -139,28 +128,17 @@ const Logo: React.FC<LogoProps> = ({ className = "", variant = "header" }) => {
     return () => window.removeEventListener("logostylechange", handler);
   }, []);
 
-  // Classic = text-based logo everywhere
-  if (style === "classic") {
-    return <ClassicTextLogo className={className} />;
-  }
+  void variant;
 
-  // Modern = image-based for home/header, Futura text for sidebar
-  if (variant === "sidebar") {
-    return <ModernTextLogo className={className} />;
-  }
-
-  let lightTarget = headerLightLogo;
-  let darkTarget = headerDarkLogo;
-  if (variant === "home") {
-    lightTarget = homeLightLogo;
-    darkTarget = homeDarkLogo;
-  }
   return (
-    <ImageLogo
-      className={className}
-      lightSrc={lightTarget}
-      darkSrc={darkTarget}
-    />
+    <div className={`flex items-center gap-[0.45em] leading-none ${className}`}>
+      <BisMark className="w-[1.7em] h-[1.7em] shrink-0" />
+      {style === "classic" ? (
+        <ClassicWordmark className="" />
+      ) : (
+        <ModernWordmark className="" />
+      )}
+    </div>
   );
 };
 

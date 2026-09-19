@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/assets/Dark-Rect.png" alt="BIS-SIH Logo" width="600" />
+  <img src="public/bis-logo.svg" alt="BIS-SIH Logo" width="480" />
 </p>
 
 # BIS-SIH
