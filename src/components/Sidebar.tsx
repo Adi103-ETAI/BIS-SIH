@@ -85,7 +85,20 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
               isActive("/") && isOpen ? "text-primary bg-primary/10" : isActive("/") ? "text-primary" : "text-secondary/70 hover:text-foreground hover:bg-muted/40"
             }`}
           >
-            <img src={newChatIcon.src} alt="" aria-hidden="true" className="w-[18px] h-[18px] shrink-0 object-contain dark:invert" />
+            <span
+              aria-hidden="true"
+              className="w-[18px] h-[18px] shrink-0 bg-current"
+              style={{
+                maskImage: `url(${newChatIcon.src})`,
+                WebkitMaskImage: `url(${newChatIcon.src})`,
+                maskSize: "contain",
+                WebkitMaskSize: "contain",
+                maskRepeat: "no-repeat",
+                WebkitMaskRepeat: "no-repeat",
+                maskPosition: "center",
+                WebkitMaskPosition: "center",
+              }}
+            />
             <span className={`whitespace-nowrap transition-all duration-300 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>New Chat</span>
           </button>
           <AppLink
