@@ -23,6 +23,10 @@ class Settings(BaseSettings):
     embedding_model: str = ""
     embedding_dim: int = 1024
 
+    # Upstash Redis (REST). Empty = in-memory fallback (single-process dev).
+    upstash_redis_rest_url: str = ""
+    upstash_redis_rest_token: str = ""
+
 
 @lru_cache
 def get_settings() -> Settings:
