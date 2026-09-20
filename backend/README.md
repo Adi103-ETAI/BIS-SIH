@@ -19,7 +19,6 @@ uv run uvicorn app.main:app --port 8000  # matches frontend proxy default 127.0.
 `app/{api,application,domain,infra,core}` · `worker/` (Stage 3+) · `migrations/` (Alembic) · `tests/`
 
 ## Stage 3 notes
-
 - Retrieval is lexical over published file-backed knowledge (`data/*.json`,
   illustrative seeds auto-created). Dense vectors + pgvector arrive with the
   compose stack + OD-008; the `KnowledgeStore`/`EmbeddingProvider` ports keep
@@ -27,3 +26,16 @@ uv run uvicorn app.main:app --port 8000  # matches frontend proxy default 127.0.
 - Generation is extractive (`ExtractiveComposer`); an LLM plugs into the
   `Generator` port at OD-007 with no route changes.
 - Admin knowledge endpoints are open in dev; Stage 4 gates them with sessions.
+
+## Hosting decision — cloud (local-RAM friendly)
+
+| Layer | Choice | Wiring |
+|---|---|---|
+| Postgres + pgvector | Supabase (free tier, pgvector built in) | `BIS_DATABASE_URL` = pooler string |
+| Redis (cache/queue/rate-limit) | Upstash (free tier) | `BIS_REDIS_URL` = `rediss://…` URL |
+| LLM + embeddings | API endpoint (OD-007/008, TBD) | `BIS_LLM_*` / `BIS_EMBEDDING_*` |
+| Object storage | Local MinIO for now; R2 later if PDFs grow | `BIS_S3_ENDPOINT_URL` |
+
+Code stays provider-agnostic (ports/adapters) — cloud vs local is config-only.
+Migrations run `CREATE EXTENSION IF NOT EXISTS vector` (works on Supabase).
+Docs `docs/` blueprint unchanged; this decision refines OD-009/010.
