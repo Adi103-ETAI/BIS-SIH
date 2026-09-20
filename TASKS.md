@@ -12,6 +12,7 @@ One agent per file at a time. If your target file is already In Progress, stop a
 -->
 
 ## 🟢 Completed (keep last 10)
+- [x] Agent: OpenCode | Files: backend/ | Task: Stage 5 conversations — persistence, ask, regenerate, import, owner-404 (31 tests green) | Commit: STAGE5
 - [x] Agent: OpenCode | Files: backend/, src/app/api/v1/ | Task: Stage 4 auth — Argon2id sessions, cookies, CSRF, lockout, RBAC, admin gate, v1 proxy (24 tests green) | Commit: STAGE4
 - [x] Agent: OpenCode | Files: backend/ | Task: Stage 3 real RAG — file-backed knowledge, extractive compose, citation validation, ingestion MVP, v1 search, golden eval (16 tests green) | Commit: STAGE3
 - [x] Agent: OpenCode | Files: backend/ | Task: Stage 2 /search compatibility — frozen contract, stub RAG, rate limits, API-LEG-001..006 (9 tests green), proxy conformance via :3000 | Commit: STAGE2

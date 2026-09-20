@@ -1,6 +1,11 @@
 """API-AUTH-* + SEC-AUTH-* (docs/19 §3, 05 §5.1–§5.2, 06)."""
 
 import pytest
+import uuid
+
+
+def _uid():
+    return 't-' + uuid.uuid4().hex[:8]
 from fastapi.testclient import TestClient
 
 from app.application import identity_service as ident
@@ -33,13 +38,15 @@ def c(tmp_path, monkeypatch):
     return TestClient(create_app(), base_url="https://test")
 
 
-def _register(c, email="u@example.com", password="longpassword1", name="U", ip="a1"):
+def _register(c, email="u@example.com", password="longpassword1", name="U", ip=None):
+    ip = ip or _uid()
     return c.post("/api/v1/auth/register",
                   json={"email": email, "password": password, "display_name": name},
                   headers={"X-Forwarded-For": ip})
 
 
-def _login(c, email="u@example.com", password="longpassword1", ip="a1"):
+def _login(c, email="u@example.com", password="longpassword1", ip=None):
+    ip = ip or _uid()
     return c.post("/api/v1/auth/login", json={"email": email, "password": password},
                   headers={"X-Forwarded-For": ip})
 
@@ -71,11 +78,12 @@ def test_api_auth_003_profile_patch(c):
 
 
 def test_sec_auth_001_lockout(c):
-    _register(c, ip="a9")
+    ip = "lock-" + uuid.uuid4().hex[:8]
+    _register(c, ip=ip)
     for i in range(5):
-        r = _login(c, password="wrongpassword", ip="a9")
+        r = _login(c, password="wrongpassword", ip=ip)
         assert r.status_code == 401, i
-    r = _login(c, password="wrongpassword", ip="a9")
+    r = _login(c, password="wrongpassword", ip=ip)
     assert r.status_code == 423 and r.json()["error"]["code"] == "AUTH_LOCKED"
 
 

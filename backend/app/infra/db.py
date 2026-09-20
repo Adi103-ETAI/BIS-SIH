@@ -41,6 +41,8 @@ def init_db(engine=None) -> None:
 
     from app.domain.auth import ROLES, Role
 
+    import app.domain.conversation  # noqa: F401 (register tables before create_all)
+
     engine = engine or get_engine()
     try:
         Base.metadata.create_all(engine)

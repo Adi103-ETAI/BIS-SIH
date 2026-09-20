@@ -12,7 +12,9 @@ from app.main import create_app
 client = TestClient(create_app(), base_url="https://test")
 
 
-def _search(body, ip="leg-1"):
+def _search(body, ip=None):
+    import uuid as _uuid
+    ip = ip or "t-" + _uuid.uuid4().hex[:8]
     return client.post("/search", json=body, headers={"X-Forwarded-For": ip})
 
 
@@ -64,7 +66,7 @@ def test_api_leg_005_timeout_budget(monkeypatch):
 
 def test_api_leg_006_rate_limit():
     reset_rate_limits()
-    ip = "leg-6"
+    ip = "leg-6-" + __import__("uuid").uuid4().hex[:8]
     for _ in range(10):
         assert _search({"query": "q"}, ip=ip).status_code == 200
     r = _search({"query": "q"}, ip=ip)
