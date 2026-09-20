@@ -5,9 +5,9 @@ import { Search, Lightbulb, ArrowRightLeft, BookOpen, ArrowUp, Square } from "lu
 import Logo from "./Logo";
 
 const EXAMPLES = [
-  { label: "Look up an IS code", icon: Lightbulb },
-  { label: "Ask about ISI certification", icon: ArrowRightLeft },
-  { label: "Ask about standards", icon: BookOpen },
+  { label: "IS 10500 drinking water", query: "What are the requirements for drinking water as per IS 10500?", icon: Lightbulb },
+  { label: "ISI certification process", query: "How do I get ISI certification for my product?", icon: ArrowRightLeft },
+  { label: "Gold hallmarking", query: "What is hallmarking for gold jewellery?", icon: BookOpen },
 ];
 
 interface QueryZoneProps {
@@ -45,6 +45,19 @@ const QueryZone = ({ onSubmit, onStop, isLoading, hasResults }: QueryZoneProps) 
     setGreeting(getGreeting());
     const interval = setInterval(() => setGreeting(getGreeting()), 60000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // Press "/" anywhere to focus the inquiry box.
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      e.preventDefault();
+      inputRef.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   const handleSubmit = (q?: string) => {
@@ -104,7 +117,7 @@ const QueryZone = ({ onSubmit, onStop, isLoading, hasResults }: QueryZoneProps) 
           {EXAMPLES.map((ex) => (
             <button
               key={ex.label}
-              onClick={() => handleSubmit(ex.label)}
+              onClick={() => handleSubmit(ex.query)}
               className="flex items-center gap-2 text-[12px] sm:text-[13px] font-body font-medium text-secondary border border-border px-4 py-2.5 rounded-full hover:bg-primary/8 hover:border-primary/30 hover:text-primary transition-all"
             >
               <ex.icon className="w-3.5 h-3.5" />

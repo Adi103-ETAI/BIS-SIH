@@ -135,11 +135,15 @@ const AnswerCard = ({ data, onRegenerate, onOpenSources }: AnswerCardProps) => {
               const isCitation = href?.startsWith('#citation-');
               if (isCitation) {
                 const label = String(children);
+                const cited = data.citations.find((c) => String(c.index) === label)
+                  ?? data.citations[Number(label) - 1];
+                const preview = cited ? cited.chunk_text.slice(0, 200) + (cited.chunk_text.length > 200 ? "…" : "") : null;
                 return (
                   <a
                     {...props}
                     href={href}
-                    className="no-underline"
+                    aria-label={`Open citation ${label}`}
+                    className="no-underline relative group/cite"
                     onClick={(e) => {
                       e.preventDefault();
                       onOpenSources?.(data.citations, data.query);
@@ -148,6 +152,12 @@ const AnswerCard = ({ data, onRegenerate, onOpenSources }: AnswerCardProps) => {
                     <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-[5px] mx-[1px] rounded-full bg-primary/12 text-primary text-[10px] font-semibold leading-none relative -top-[9px] hover:bg-primary/20 hover:text-primary-hover transition-colors cursor-pointer">
                       {label}
                     </span>
+                    {cited && (
+                      <span className="pointer-events-none hidden group-hover/cite:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 rounded-lg border border-border bg-popover p-3 text-left shadow-lg z-20 normal-case">
+                        <span className="block text-[12px] font-semibold text-foreground truncate">{cited.title}</span>
+                        <span className="block text-[12px] font-body font-normal text-muted-foreground leading-relaxed mt-1">“{preview}”</span>
+                      </span>
+                    )}
                   </a>
                 );
               }

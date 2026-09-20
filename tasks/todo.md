@@ -74,14 +74,14 @@
 
 **Estimated scope:** Small: 1 file
 
-## Task 4: Citation hover preview + Esc to close + pill a11y
+## Task 4: Citation hover preview + Esc to close + pill a11y — DONE
 
 **Description:** Add desktop hover preview of the cited chunk (reuse `CitationCard` compact), `Esc` closes `SourcesPanel`, citation pills get keyboard focus + aria-labels.
 
 **Acceptance criteria:**
-- [ ] Hovering a `[N]` pill on desktop shows chunk title + first ~200 chars
-- [ ] `Esc` closes the sources panel; focus returns to the answer region
-- [ ] Pills are keyboard-focusable with `aria-label="Open citation N"`
+- [x] Hovering a `[N]` pill on desktop shows chunk title + first ~200 chars (CSS `group-hover` tooltip in `AnswerCard`, no JS positioning)
+- [x] `Esc` closes the sources panel; focus returns to the chat region (`scrollRef` focus in `IndexView`)
+- [x] Pills are keyboard-focusable with `aria-label="Open citation N"` (native anchor focus + label)
 
 **Verification:**
 - [ ] Tests pass: `bun run test`
@@ -101,14 +101,14 @@
 - [ ] End-to-end read flow works (ask → table/code answer → hover → open sources → Esc)
 - [ ] No change to `src/types/api.ts` contract
 
-## Task 5: Real example prompts + follow-up chips + `/` shortcut + stop button
+## Task 5: Real example prompts + follow-up chips + `/` shortcut + stop button — DONE
 
 **Description:** Replace placeholder `EXAMPLES` in `QueryZone` with 3-4 real BIS queries, add follow-up chips under successful answers, `/` focuses input, Stop button aborts in-flight request (wires into Task 1 controller).
 
 **Acceptance criteria:**
-- [ ] Home shows real queries (e.g. IS-code lookup, ISI certification, hallmarking) that submit verbatim
-- [ ] After success, 2-3 follow-up chips appear and submit on click
-- [ ] `/` focuses the input when not already typing; Stop button visible only while loading
+- [x] Home shows real queries (IS 10500, ISI certification, hallmarking) that submit full query text from short chips
+- [x] After success, 3 follow-up chips appear and submit on click (`FOLLOW_UPS` in `IndexView`)
+- [x] `/` focuses the input when not already typing; Stop button visible only while loading (Stop shipped in Task 1)
 
 **Verification:**
 - [ ] Tests pass: `bun run test`

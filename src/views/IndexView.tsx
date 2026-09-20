@@ -43,6 +43,19 @@ const IndexView = () => {
 
   const [activeSources, setActiveSources] = useState<{ citations: Citation[]; queryContext: string } | null>(null);
 
+  // Esc closes the sources panel and returns focus to the chat region.
+  useEffect(() => {
+    if (!activeSources) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setActiveSources(null);
+        scrollRef.current?.focus({ preventScroll: true });
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [activeSources]);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({
@@ -200,13 +213,19 @@ const IndexView = () => {
     handleQuery(query);
   };
 
+  const FOLLOW_UPS = [
+    "Explain in simple terms",
+    "Which IS code applies here?",
+    "What are the certification steps?",
+  ];
+
   const hasMessages = messages.length > 0;
 
   return (
     <div className="flex h-full bg-background overflow-hidden w-full">
       <PanelGroup direction="horizontal" autoSaveId="sources-panel-layout">
         <Panel defaultSize={100} minSize={30} className="relative flex flex-col h-full">
-          <div ref={scrollRef} className="flex-1 overflow-y-auto w-full custom-scrollbar pb-36">
+          <div ref={scrollRef} tabIndex={-1} className="flex-1 overflow-y-auto w-full custom-scrollbar pb-36 focus:outline-none">
             {!hasMessages ? (
               <div className="h-full flex flex-col items-center justify-center -mt-8">
                 <QueryZone onSubmit={handleQuery} isLoading={false} hasResults={false} />
@@ -233,11 +252,24 @@ const IndexView = () => {
                       <div className="w-full">
                         {msg.status === "loading" && <LoadingState />}
                         {msg.status === "success" && msg.response && (
-                          <AnswerCard
-                            data={msg.response}
-                            onRegenerate={() => handleRetry(msg.id, msg.query)}
-                            onOpenSources={(citations, queryContext) => setActiveSources({ citations, queryContext })}
-                          />
+                          <>
+                            <AnswerCard
+                              data={msg.response}
+                              onRegenerate={() => handleRetry(msg.id, msg.query)}
+                              onOpenSources={(citations, queryContext) => setActiveSources({ citations, queryContext })}
+                            />
+                            <div className="flex flex-wrap gap-2 pt-1">
+                              {FOLLOW_UPS.map((chip) => (
+                                <button
+                                  key={chip}
+                                  onClick={() => handleQuery(chip)}
+                                  className="text-[12px] font-body font-medium text-secondary border border-border px-3.5 py-2 rounded-full hover:bg-primary/8 hover:border-primary/30 hover:text-primary transition-all"
+                                >
+                                  {chip}
+                                </button>
+                              ))}
+                            </div>
+                          </>
                         )}
                         {msg.status === "empty" && <EmptyState onRetry={() => handleRetry(msg.id, msg.query)} />}
                         {msg.status === "error" && (
