@@ -21,10 +21,42 @@ const AnswerCard = ({ data, onRegenerate, onOpenSources }: AnswerCardProps) => {
 
   const uniqueSources = [...new Set(data.citations.map((c) => c.source_type))] as SourceType[];
 
+  // Without remark-gfm, pipe tables would render as raw text. Wrap them in a
+  // fenced block so they display as a neat monospaced block until GFM lands.
+  const renderableAnswer = (() => {
+    const lines = data.answer.split("\n");
+    const out: string[] = [];
+    let inFence = false;
+    let i = 0;
+    const isPipeRow = (l: string) => /^\s*\|.*\|\s*$/.test(l);
+    const isDelimiter = (l: string) => /^\s*\|?[\s:|-]+\|?[\s:|-]*\|\s*$/.test(l) && /-/.test(l);
+    while (i < lines.length) {
+      const line = lines[i];
+      if (/^\s*```/.test(line)) {
+        inFence = !inFence;
+        out.push(line);
+        i++;
+        continue;
+      }
+      if (!inFence && isPipeRow(line) && i + 1 < lines.length && isDelimiter(lines[i + 1])) {
+        out.push("```text");
+        while (i < lines.length && (isPipeRow(lines[i]) || /^\s*$/.test(lines[i]))) {
+          if (isPipeRow(lines[i])) out.push(lines[i].trim());
+          i++;
+        }
+        out.push("```");
+        continue;
+      }
+      out.push(line);
+      i++;
+    }
+    return out.join("\n");
+  })();
+
   // Replace [N] with markdown superscript links (no raw HTML)
-  const processedAnswer = data.answer.replace(
+  const processedAnswer = renderableAnswer.replace(
     /\[(\d+)\]/g,
-    (_, num) => `[^${num}^](#citation-${num})`
+    (_, num) => `[${num}](#citation-${num})`
   );
 
   const handleCopy = () => {
@@ -102,19 +134,18 @@ const AnswerCard = ({ data, onRegenerate, onOpenSources }: AnswerCardProps) => {
             a: ({ children, href, ...props }) => {
               const isCitation = href?.startsWith('#citation-');
               if (isCitation) {
-                // Strip the wrapping ^ chars (footnote markers)
-                const label = String(children).replace(/\^/g, '');
+                const label = String(children);
                 return (
                   <a
                     {...props}
                     href={href}
-                    className="no-underline align-super"
+                    className="no-underline"
                     onClick={(e) => {
                       e.preventDefault();
                       onOpenSources?.(data.citations, data.query);
                     }}
                   >
-                    <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-[5px] mx-[1px] rounded-full bg-primary/12 text-primary text-[10px] font-semibold leading-none align-super hover:bg-primary/20 hover:text-primary-hover transition-colors cursor-pointer">
+                    <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-[5px] mx-[1px] rounded-full bg-primary/12 text-primary text-[10px] font-semibold leading-none relative -top-[9px] hover:bg-primary/20 hover:text-primary-hover transition-colors cursor-pointer">
                       {label}
                     </span>
                   </a>
@@ -138,6 +169,48 @@ const AnswerCard = ({ data, onRegenerate, onOpenSources }: AnswerCardProps) => {
             ),
             h3: ({ children }) => (
               <h3 className="font-heading text-[17px] font-medium text-foreground leading-[1.3] mt-4 mb-2">{children}</h3>
+            ),
+            p: ({ children }) => (
+              <p className="text-foreground/90 my-2.5 first:mt-0 last:mb-0">{children}</p>
+            ),
+            ul: ({ children }) => (
+              <ul className="list-disc pl-6 my-2.5 space-y-1.5 marker:text-primary">{children}</ul>
+            ),
+            ol: ({ children }) => (
+              <ol className="list-decimal pl-6 my-2.5 space-y-1.5 marker:text-primary marker:font-semibold">{children}</ol>
+            ),
+            li: ({ children }) => (
+              <li className="text-foreground/90 leading-[1.7]">{children}</li>
+            ),
+            blockquote: ({ children }) => (
+              <blockquote className="border-l-2 border-primary/40 pl-4 my-3 italic text-muted-foreground">{children}</blockquote>
+            ),
+            pre: ({ children }) => (
+              <pre className="bg-muted/60 border border-border/60 rounded-lg p-3.5 my-3 overflow-x-auto text-[13px] leading-[1.6] custom-scrollbar">{children}</pre>
+            ),
+            code: ({ children, className }) => {
+              const isBlock = !!className;
+              return isBlock ? (
+                <code className="font-mono text-foreground/90">{children}</code>
+              ) : (
+                <code className="font-mono text-[0.85em] bg-muted/70 border border-border/50 rounded px-1.5 py-0.5 text-foreground">{children}</code>
+              );
+            },
+            strong: ({ children }) => (
+              <strong className="font-semibold text-foreground">{children}</strong>
+            ),
+            hr: () => <hr className="border-border/60 my-4" />,
+            table: ({ children }) => (
+              <div className="overflow-x-auto my-3 rounded-lg border border-border/60 custom-scrollbar">
+                <table className="w-full text-[13.5px] border-collapse">{children}</table>
+              </div>
+            ),
+            thead: ({ children }) => <thead className="bg-muted/60">{children}</thead>,
+            th: ({ children }) => (
+              <th className="text-left font-semibold text-foreground px-3 py-2 border-b border-border/60 whitespace-nowrap">{children}</th>
+            ),
+            td: ({ children }) => (
+              <td className="px-3 py-2 border-b border-border/40 text-foreground/90">{children}</td>
             ),
           }}
         >

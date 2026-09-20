@@ -23,18 +23,18 @@
 
 **Estimated scope:** Small: 1-2 files (plus ErrorState props)
 
-## Task 2: Error/Empty states show actionable detail
+## Task 2: Error/Empty states show actionable detail — DONE
 
 **Description:** Extend `ErrorState`/`EmptyState` to accept `message` + `onRetry`, add "rephrase hint" with IS-number example, keep retry working for both failed and empty answers.
 
 **Acceptance criteria:**
-- [ ] Error card shows specific message (e.g. timeout vs 502 detail), not only "temporarily unavailable"
-- [ ] Empty card keeps current copy and adds one concrete rephrase example
-- [ ] Retry re-submits the same query string
+- [x] Error card shows specific message (e.g. timeout vs 502 detail), not only "temporarily unavailable" (wired in Task 1: `IndexView` passes `msg.error`)
+- [x] Empty card keeps current copy and adds one concrete rephrase example
+- [x] Retry re-submits the same query string
 
 **Verification:**
-- [ ] Tests pass: `bun run test`
-- [ ] Build succeeds: `bun run build`
+- [x] Tests pass: `bun run test`
+- [x] Build succeeds: `bun run build`
 - [ ] Manual check: force 502 from proxy, confirm detail renders; force `chunks_retrieved: 0`, confirm empty copy
 
 **Dependencies:** Task 1
@@ -52,14 +52,15 @@
 - [ ] Abort/timeout/error-detail manually verified
 - [ ] Review with human before proceeding
 
-## Task 3: Markdown tables/code/lists in AnswerCard
+## Task 3: Markdown tables/code/lists in AnswerCard — DONE (except GFM tables need remark-gfm)
 
 **Description:** Add `table`, `pre/code`, `ul/ol`, `p`, `blockquote` renderers to the existing `ReactMarkdown` in `AnswerCard` using current Tailwind/shadcn tokens; no new markdown library.
 
 **Acceptance criteria:**
-- [ ] Tables render with header row + horizontal scroll on mobile, no layout break
-- [ ] Code blocks render monospace with copy affordance or at minimum readable wrapping
-- [ ] Existing `[N]` citation pills still open `SourcesPanel`
+- [x] Code blocks render as distinct blocks; inline code has chip styling (no new dep)
+- [x] Lists render with bullets/numbers; blockquotes with left border; paragraphs brightened to `text-foreground/90`
+- [x] Existing `[N]` citation pills still open `SourcesPanel` (pill markup simplified, alignment fixed)
+- [ ] Tables render as real tables — BLOCKED: needs `remark-gfm` (`package.json`, outside OpenCode perms). Shipped fallback: pipe-table blocks render as monospaced `text` code blocks instead of raw prose.
 
 **Verification:**
 - [ ] Tests pass: `bun run test`

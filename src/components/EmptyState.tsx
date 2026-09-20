@@ -9,8 +9,11 @@ const EmptyState = ({ onRetry }: EmptyStateProps) => {
     <div className="w-full animate-fade-up text-center py-10">
       <SearchX className="w-10 h-10 text-secondary/50 mx-auto mb-4" />
       <p className="text-foreground font-heading text-[18px] font-medium mb-1">No results found</p>
-      <p className="text-[14px] font-body text-muted-foreground mb-6">
+      <p className="text-[14px] font-body text-muted-foreground mb-2">
         Try rephrasing your question or using more specific standards terminology (e.g. IS numbers).
+      </p>
+      <p className="text-[13px] font-body text-muted-foreground/80 mb-6">
+        Example: “What are the requirements for drinking water as per IS 10500?”
       </p>
       <button
         onClick={onRetry}
