@@ -21,7 +21,10 @@ type ChatMessage = {
   response?: QueryResponse;
   status: "loading" | "success" | "empty" | "error";
   timestamp: number;
+  error?: string;
 };
+
+const REQUEST_TIMEOUT_MS = 30000;
 
 const formatTime = (ts: number) => {
   return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -36,6 +39,7 @@ const IndexView = () => {
   const router = useRouter();
   const handledNavigationRef = useRef<string | null>(null);
   const latestMessageStatus = messages[messages.length - 1]?.status;
+  const inFlightRef = useRef(new Map<string, AbortController>());
 
   const [activeSources, setActiveSources] = useState<{ citations: Citation[]; queryContext: string } | null>(null);
 
@@ -52,11 +56,20 @@ const IndexView = () => {
     const newMessageId = Date.now().toString();
     setMessages((prev) => [...prev, { id: newMessageId, query, status: "loading", timestamp: Date.now() }]);
 
+    const controller = new AbortController();
+    inFlightRef.current.set(newMessageId, controller);
+    let timedOut = false;
+    const timeoutId = window.setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, REQUEST_TIMEOUT_MS);
+
     try {
       const res = await fetch(`${API_BASE}/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query, top_k: 8 }),
+        signal: controller.signal,
       });
 
       if (!res.ok) {
@@ -100,10 +113,36 @@ const IndexView = () => {
         }
       }
     } catch (err) {
+      const isAbort =
+        err instanceof DOMException ? err.name === "AbortError" : err instanceof Error && err.name === "AbortError";
+      const message = isAbort
+        ? timedOut
+          ? "Request timed out after 30s. Please try again."
+          : "Request cancelled."
+        : err instanceof Error
+          ? err.message
+          : "Query request failed.";
       console.error("Query request failed", err);
-      setMessages((prev) => prev.map((msg) => (msg.id === newMessageId ? { ...msg, status: "error" } : msg)));
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === newMessageId ? { ...msg, status: "error" as const, error: message } : msg)),
+      );
+    } finally {
+      window.clearTimeout(timeoutId);
+      inFlightRef.current.delete(newMessageId);
     }
   }, [addHistoryEntry]);
+
+  const handleStop = useCallback(() => {
+    inFlightRef.current.forEach((controller) => controller.abort());
+  }, []);
+
+  useEffect(() => {
+    const inFlight = inFlightRef.current;
+    return () => {
+      inFlight.forEach((controller) => controller.abort());
+      inFlight.clear();
+    };
+  }, []);
 
   useEffect(() => {
     const navKey = `${pathname}?${searchParams.toString()}`;
@@ -201,7 +240,9 @@ const IndexView = () => {
                           />
                         )}
                         {msg.status === "empty" && <EmptyState onRetry={() => handleRetry(msg.id, msg.query)} />}
-                        {msg.status === "error" && <ErrorState onRetry={() => handleRetry(msg.id, msg.query)} />}
+                        {msg.status === "error" && (
+                          <ErrorState message={msg.error} onRetry={() => handleRetry(msg.id, msg.query)} />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -215,6 +256,7 @@ const IndexView = () => {
               <div className="max-w-3xl md:max-w-4xl xl:max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pointer-events-auto">
                 <QueryZone
                   onSubmit={handleQuery}
+                  onStop={handleStop}
                   isLoading={messages[messages.length - 1]?.status === "loading"}
                   hasResults={true}
                 />

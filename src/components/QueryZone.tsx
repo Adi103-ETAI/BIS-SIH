@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Loader2, Search, Lightbulb, ArrowRightLeft, BookOpen, ArrowUp } from "lucide-react";
+import { Search, Lightbulb, ArrowRightLeft, BookOpen, ArrowUp, Square } from "lucide-react";
 import Logo from "./Logo";
 
 const EXAMPLES = [
@@ -12,6 +12,7 @@ const EXAMPLES = [
 
 interface QueryZoneProps {
   onSubmit: (query: string) => void;
+  onStop?: () => void;
   isLoading: boolean;
   hasResults: boolean;
 }
@@ -34,7 +35,7 @@ const getGreeting = () => {
   return `${salutation}${suffix}`;
 };
 
-const QueryZone = ({ onSubmit, isLoading, hasResults }: QueryZoneProps) => {
+const QueryZone = ({ onSubmit, onStop, isLoading, hasResults }: QueryZoneProps) => {
   const [query, setQuery] = useState("");
   const [greeting, setGreeting] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -83,12 +84,14 @@ const QueryZone = ({ onSubmit, isLoading, hasResults }: QueryZoneProps) => {
             className="flex-1 h-12 sm:h-14 pl-3 pr-3 text-[14px] sm:text-[15px] font-body bg-transparent text-foreground placeholder:text-secondary/50 focus:outline-none"
           />
           <button
-            onClick={() => handleSubmit()}
-            disabled={isLoading || !query.trim()}
+            onClick={() => (isLoading ? onStop?.() : handleSubmit())}
+            disabled={isLoading ? !onStop : !query.trim()}
+            aria-label={isLoading ? "Stop request" : "Submit query"}
+            title={isLoading ? "Stop request" : "Submit query"}
             className="shrink-0 w-10 h-10 mr-2 flex items-center justify-center rounded-xl bg-primary text-primary-foreground transition-all disabled:opacity-40 disabled:pointer-events-none hover:bg-primary-hover active:scale-95"
           >
             {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin-slow" />
+              <Square className="w-4 h-4" />
             ) : (
               <ArrowUp className="w-4 h-4" />
             )}

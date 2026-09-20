@@ -1,17 +1,17 @@
 # Chat UI Upgrades — Task List (UI-only)
 
-## Task 1: Abort + timeout + real error surfacing
+## Task 1: Abort + timeout + real error surfacing — DONE (commit pending)
 
 **Description:** Make `handleQuery` in `IndexView` cancellable with `AbortController`, 30s timeout, and propagate the backend `{detail}` message to `ErrorState` instead of a generic string.
 
 **Acceptance criteria:**
-- [ ] Pending request can be cancelled (Stop button or new submit aborts previous fetch)
-- [ ] Request exceeding 30s shows error state, no hung `LoadingState`
-- [ ] Non-OK response surfaces backend `detail` text in error UI
+- [x] Pending request can be cancelled (Stop button or new submit aborts previous fetch)
+- [x] Request exceeding 30s shows error state, no hung `LoadingState`
+- [x] Non-OK response surfaces backend `detail` text in error UI
 
 **Verification:**
-- [ ] Tests pass: `bun run test`
-- [ ] Build succeeds: `bun run build`
+- [x] Tests pass: `bun run test`
+- [x] Build succeeds: `bun run build`
 - [ ] Manual check: submit query, trigger Stop; block network and confirm error text appears
 
 **Dependencies:** None
