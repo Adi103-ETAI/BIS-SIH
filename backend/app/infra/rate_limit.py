@@ -10,6 +10,7 @@ RATE_CLASSES: dict[str, tuple[int, int]] = {
     # name: (max_hits, window_seconds)
     "search_anon": (10, 60),
     "search_auth": (30, 60),
+    "auth": (10, 60),
 }
 
 _buckets: dict[tuple[str, str], list[float]] = {}

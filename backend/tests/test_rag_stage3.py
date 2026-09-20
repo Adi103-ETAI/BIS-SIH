@@ -6,6 +6,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.application.rag_orchestrator import RagOrchestrator
+from app.domain.auth import Base
+from app.infra.db import session_factory
 from app.infra.knowledge_store import reset_store
 from app.main import create_app
 
@@ -54,19 +56,41 @@ def test_saf_001_no_fabrication(orch):
     assert "sufficient evidence" in res.answer
 
 
-def test_ing_001_upload_publish_searchable(tmp_path):
-    client = TestClient(create_app())
+def test_ing_001_upload_publish_searchable(tmp_path, monkeypatch):
+    from sqlalchemy import create_engine as _ce
+
+    from app.domain.auth import ROLES, Role
+
+    engine = _ce(f"sqlite:///{tmp_path}/ing.db", connect_args={"check_same_thread": False})
+    Base.metadata.create_all(engine)
+    Session = session_factory(engine)
+    with Session() as s:
+        for code in ROLES:
+            s.add(Role(code=code, description=code))
+        s.commit()
+    from app.infra import db as db_module
+
+    real_sf = db_module.session_factory
+    monkeypatch.setattr(db_module, "session_factory", lambda e=None: real_sf(engine))
+    client = TestClient(create_app(), base_url="https://test")
     reset_store(directory=tmp_path)
+    assert client.post("/api/v1/auth/register",
+                       json={"email": "admin@x.com", "password": "longpassword1",
+                             "display_name": "Admin"}).status_code == 201  # first user = admin
+    csrf = client.cookies.get("bis_csrf", "")
     with open(__file__, "rb") as fh:
         r = client.post(
             "/api/v1/admin/documents/upload",
             files={"file": ("demo.txt", fh, "text/plain")},
             data={"title": "Demo Doc", "source_key": "bis-illustrative"},
+            headers={"X-CSRF-Token": csrf},
         )
     assert r.status_code == 201, r.text
     version_id = r.json()["version_id"]
-    assert client.post(f"/api/v1/admin/documents/{version_id}/publish").status_code == 200
-    r = client.post("/api/v1/search", json={"query": "golden recall thresholds validity", "top_k": 3})
+    assert client.post(f"/api/v1/admin/documents/{version_id}/publish",
+                       headers={"X-CSRF-Token": csrf}).status_code == 200
+    r = client.post("/api/v1/search", json={"query": "golden recall thresholds validity", "top_k": 3},
+                    headers={"X-CSRF-Token": csrf})
     assert r.status_code == 200 and r.json()["grounding"] in ("grounded", "insufficient_evidence")
 
 

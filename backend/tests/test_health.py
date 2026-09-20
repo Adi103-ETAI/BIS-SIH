@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 from app.main import create_app
 
-client = TestClient(create_app())
+client = TestClient(create_app(), base_url="https://test")
 
 
 def test_health_ok():

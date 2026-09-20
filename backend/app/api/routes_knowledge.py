@@ -3,16 +3,24 @@
 Admin endpoints are open in dev; session auth gates them at Stage 4 (TODO).
 """
 
-from fastapi import APIRouter, File, Form, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from fastapi.responses import JSONResponse
 
 from app.application.ingestion_service import get_job, ingest_text, publish_version
 from app.application.rag_orchestrator import RagOrchestrator
+from app.application.rbac import require_admin
 from app.core.errors import legacy_error, v1_error
 from app.domain.search import validate_search_request
 from app.infra.knowledge_store import get_store
 
 router = APIRouter()
+
+
+def _admin_or_deny(admin):  # type: ignore[no-untyped-def]
+    """require_admin returns the user or a ready-made 401/403 JSONResponse."""
+    if not hasattr(admin, "role_code"):
+        return admin
+    return None
 
 
 def _orchestrator() -> RagOrchestrator:
@@ -55,13 +63,16 @@ async def v1_search(request: Request) -> JSONResponse:
     return JSONResponse(status_code=200, content=payload)
 
 
-# -- admin (Stage 4 TODO: require session + admin role) --------------------
+# -- admin (Stage 4: session + admin role enforced; bootstrap: first user is admin) --
 @router.post("/api/v1/admin/documents/upload")
 async def upload_document(
     file: UploadFile = File(...),
     title: str = Form(...),
     source_key: str = Form(...),
+    admin=Depends(require_admin),
 ) -> JSONResponse:
+    if (denied := _admin_or_deny(admin)) is not None:
+        return denied
     name = file.filename or "upload"
     if not name.lower().endswith((".txt", ".md", ".pdf")):
         return JSONResponse(status_code=422, content={"detail": "only .txt, .md, .pdf accepted"})
@@ -91,7 +102,9 @@ async def upload_document(
 
 
 @router.get("/api/v1/admin/jobs/{job_id}")
-async def job_status(job_id: str) -> JSONResponse:
+async def job_status(job_id: str, admin=Depends(require_admin)) -> JSONResponse:
+    if (denied := _admin_or_deny(admin)) is not None:
+        return denied
     job = get_job(job_id)
     if job is None:
         return JSONResponse(status_code=404, content={"detail": "unknown job"})
@@ -100,7 +113,9 @@ async def job_status(job_id: str) -> JSONResponse:
 
 
 @router.post("/api/v1/admin/documents/{version_id}/publish")
-async def publish_document(version_id: str) -> JSONResponse:
+async def publish_document(version_id: str, admin=Depends(require_admin)) -> JSONResponse:
+    if (denied := _admin_or_deny(admin)) is not None:
+        return denied
     if not publish_version(get_store(), version_id):
         return JSONResponse(status_code=404, content={"detail": "no such draft version"})
     return JSONResponse(status_code=200, content={"version_id": version_id, "status": "published"})

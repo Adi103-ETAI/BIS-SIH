@@ -9,7 +9,7 @@ from app.application import query_orchestrator
 from app.infra.rate_limit import reset_rate_limits
 from app.main import create_app
 
-client = TestClient(create_app())
+client = TestClient(create_app(), base_url="https://test")
 
 
 def _search(body, ip="leg-1"):

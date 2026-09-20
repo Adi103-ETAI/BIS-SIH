@@ -39,3 +39,12 @@ uv run uvicorn app.main:app --port 8000  # matches frontend proxy default 127.0.
 Code stays provider-agnostic (ports/adapters) — cloud vs local is config-only.
 Migrations run `CREATE EXTENSION IF NOT EXISTS vector` (works on Supabase).
 Docs `docs/` blueprint unchanged; this decision refines OD-009/010.
+
+## Stage 4 notes
+
+- Auth runs on SQLAlchemy today: SQLite file on laptop, Supabase URL when set.
+  No code change needed when keys land — just `BIS_DATABASE_URL`.
+- `GET/POST` auth endpoints are public; all other non-GET `/api/v1` writes
+  require the `X-CSRF-Token` header matching the `bis_csrf` cookie.
+- First registered user bootstraps as `admin`; admin knowledge endpoints
+  enforce it. Login UI is still mock (frontend slice, not this stage).
