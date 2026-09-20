@@ -127,14 +127,14 @@
 ## Checkpoint: Input
 - [ ] Examples, chips, shortcut, and stop manually verified on desktop + mobile widths
 
-## Task 6: Thumbs feedback (local-only) + copy-as-markdown + history search filter
+## Task 6: Thumbs feedback (local-only) + copy-as-markdown + history search filter — DONE
 
 **Description:** Add thumbs up/down per answer (localStorage-only counts, toast confirm, no backend call), copy answer as markdown with sources footer, and a filter input atop Recent Conversations in `Sidebar` (client-side filter of existing history).
 
 **Acceptance criteria:**
-- [ ] Thumbs toggle persists across reload via localStorage, never calls backend
-- [ ] Copy includes answer + `Sources: N` footer or full citation titles
-- [ ] History filter narrows the grouped list without breaking `?historyId=` restore
+- [x] Thumbs toggle persists across reload via localStorage (`bis-sih_feedback` map keyed by query), never calls backend
+- [x] Copy includes answer + `Sources: [N] title (TYPE)` footer
+- [x] History filter narrows the grouped list without breaking `?historyId=` restore (display-only filter, restore path untouched)
 
 **Verification:**
 - [ ] Tests pass: `bun run test`

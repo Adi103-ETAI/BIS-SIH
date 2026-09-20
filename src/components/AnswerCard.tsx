@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { Copy, BookOpen, RefreshCw, Share2, Bookmark, Check } from "lucide-react";
+import { Copy, BookOpen, RefreshCw, Share2, Bookmark, Check, ThumbsUp, ThumbsDown } from "lucide-react";
 import type { Citation, QueryResponse, SourceType } from "@/types/api";
 import { getSourceConfig } from "@/lib/sources";
 import { useToast } from "@/hooks/use-toast";
@@ -16,6 +16,16 @@ interface AnswerCardProps {
 
 const AnswerCard = ({ data, onRegenerate, onOpenSources }: AnswerCardProps) => {
   const [copied, setCopied] = useState(false);
+  const [feedback, setFeedback] = useState<"up" | "down" | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = window.localStorage.getItem("bis-sih_feedback");
+      const map = raw ? (JSON.parse(raw) as Record<string, "up" | "down">) : {};
+      return map[data.query] ?? null;
+    } catch {
+      return null;
+    }
+  });
   const { toast } = useToast();
   const { saveToVault, isInVault } = useStore();
 
@@ -60,10 +70,29 @@ const AnswerCard = ({ data, onRegenerate, onOpenSources }: AnswerCardProps) => {
   );
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(data.answer);
+    const sourcesFooter =
+      data.citations.length > 0
+        ? `\n\n---\nSources:\n${data.citations.map((c) => `[${c.index}] ${c.title} (${c.source_type.toUpperCase()})`).join("\n")}`
+        : "";
+    navigator.clipboard.writeText(`${data.answer}${sourcesFooter}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
     toast({ title: "Copied to clipboard" });
+  };
+
+  const handleFeedback = (value: "up" | "down") => {
+    const next = feedback === value ? null : value;
+    setFeedback(next);
+    try {
+      const raw = window.localStorage.getItem("bis-sih_feedback");
+      const map = raw ? (JSON.parse(raw) as Record<string, "up" | "down">) : {};
+      if (next) map[data.query] = next;
+      else delete map[data.query];
+      window.localStorage.setItem("bis-sih_feedback", JSON.stringify(map));
+    } catch {
+      // Storage full or unavailable — feedback just won't persist.
+    }
+    toast({ title: next === null ? "Feedback removed" : next === "up" ? "Thanks for the feedback" : "Feedback noted — thanks" });
   };
 
   const handleShare = async () => {
@@ -260,6 +289,26 @@ const AnswerCard = ({ data, onRegenerate, onOpenSources }: AnswerCardProps) => {
         >
           <Share2 className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Share</span>
+        </button>
+
+        <button
+          onClick={() => handleFeedback("up")}
+          aria-label="Mark answer helpful"
+          aria-pressed={feedback === "up"}
+          title="Helpful"
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] uppercase tracking-[0.05em] font-body font-medium transition-colors ${feedback === "up" ? "text-primary bg-primary/8" : "text-secondary/70 hover:text-primary hover:bg-primary/8"}`}
+        >
+          <ThumbsUp className={`w-3.5 h-3.5 ${feedback === "up" ? "fill-primary/20" : ""}`} />
+        </button>
+
+        <button
+          onClick={() => handleFeedback("down")}
+          aria-label="Mark answer not helpful"
+          aria-pressed={feedback === "down"}
+          title="Not helpful"
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] uppercase tracking-[0.05em] font-body font-medium transition-colors ${feedback === "down" ? "text-primary bg-primary/8" : "text-secondary/70 hover:text-primary hover:bg-primary/8"}`}
+        >
+          <ThumbsDown className={`w-3.5 h-3.5 ${feedback === "down" ? "fill-primary/20" : ""}`} />
         </button>
 
         {data.citations.length > 0 && (

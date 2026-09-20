@@ -1,6 +1,7 @@
 "use client";
 
-import { Clock, BookOpen, Settings, PanelLeftClose, PanelLeftOpen, Trash2, X, LogOut, User } from "lucide-react";
+import { useState } from "react";
+import { Clock, BookOpen, Settings, PanelLeftClose, PanelLeftOpen, Trash2, X, LogOut, User, Search } from "lucide-react";
 import AppLink from "@/components/AppLink";
 import { usePathname, useRouter } from "@/lib/router";
 import { useStore } from "@/contexts/StoreContext";
@@ -23,6 +24,7 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
   const router = useRouter();
   const { toast } = useToast();
   const { history, removeHistoryEntry, clearHistory } = useStore();
+  const [historyFilter, setHistoryFilter] = useState("");
 
   const isActive = (path: string) => pathname === path;
 
@@ -30,7 +32,13 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
     router.push(`/?historyId=${encodeURIComponent(item.id)}`);
   };
 
-  const groupedHistory = history.slice(0, 30).reduce<Record<string, typeof history>>((acc, item) => {
+  const visibleHistory = historyFilter.trim()
+    ? history.filter((item) =>
+        `${item.title || ""} ${item.query}`.toLowerCase().includes(historyFilter.trim().toLowerCase()),
+      )
+    : history;
+
+  const groupedHistory = visibleHistory.slice(0, 30).reduce<Record<string, typeof history>>((acc, item) => {
     const itemDate = new Date(item.timestamp);
     const label = isToday(itemDate)
       ? "Today"
@@ -131,8 +139,23 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
             )}
           </div>
           <div className="px-2 space-y-px">
+            {history.length > 3 && (
+              <div className="relative px-1 pb-1.5">
+                <Search className="absolute left-4 top-1/2 -translate-y-[calc(50%+3px)] w-3.5 h-3.5 text-secondary/40" />
+                <input
+                  type="text"
+                  value={historyFilter}
+                  onChange={(e) => setHistoryFilter(e.target.value)}
+                  placeholder="Filter conversations..."
+                  aria-label="Filter conversations"
+                  className="w-full h-8 pl-8 pr-2 text-[12px] font-body bg-muted/40 border border-border/50 rounded-lg text-foreground placeholder:text-secondary/40 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all"
+                />
+              </div>
+            )}
             {history.length === 0 ? (
               <p className="px-3 py-4 text-[11px] font-body text-secondary/40 text-center">No queries yet</p>
+            ) : visibleHistory.length === 0 ? (
+              <p className="px-3 py-4 text-[11px] font-body text-secondary/40 text-center">No matches for “{historyFilter.trim()}”</p>
             ) : (
               Object.entries(groupedHistory).map(([group, items]) => (
                 <div key={group} className="mb-2.5">
