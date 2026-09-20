@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, BookOpen, Settings, LayoutDashboard, PanelLeftClose, PanelLeftOpen, Trash2, X, LogOut, User } from "lucide-react";
+import { Clock, BookOpen, Settings, PanelLeftClose, PanelLeftOpen, Trash2, X, LogOut, User } from "lucide-react";
 import AppLink from "@/components/AppLink";
 import { usePathname, useRouter } from "@/lib/router";
 import { useStore } from "@/contexts/StoreContext";
@@ -10,6 +10,7 @@ import type { HistoryEntry } from "@/hooks/use-store";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import avatar1 from "@/assets/avatar_1.png";
+import newChatIcon from "@/assets/new-chat-icon.png";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -84,7 +85,7 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
               isActive("/") && isOpen ? "text-primary bg-primary/10" : isActive("/") ? "text-primary" : "text-secondary/70 hover:text-foreground hover:bg-muted/40"
             }`}
           >
-            <LayoutDashboard className="w-[18px] h-[18px] shrink-0" />
+            <img src={newChatIcon.src} alt="" aria-hidden="true" className="w-[18px] h-[18px] shrink-0 object-contain dark:invert" />
             <span className={`whitespace-nowrap transition-all duration-300 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>New Chat</span>
           </button>
           <AppLink
