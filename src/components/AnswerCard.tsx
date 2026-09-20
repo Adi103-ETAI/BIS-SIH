@@ -31,43 +31,64 @@ const AnswerCard = ({ data, onRegenerate, onOpenSources }: AnswerCardProps) => {
 
   const uniqueSources = [...new Set(data.citations.map((c) => c.source_type))] as SourceType[];
 
-  // Without remark-gfm, pipe tables would render as raw text. Wrap them in a
-  // fenced block so they display as a neat monospaced block until GFM lands.
-  const renderableAnswer = (() => {
+  // Pipe tables are split out and rendered as real <table> JSX (no remark-gfm
+  // needed); everything else goes through ReactMarkdown per segment.
+  const isPipeRow = (l: string) => /^\s*\|.*\|\s*$/.test(l);
+  const isDelimiterRow = (l: string) => /^\s*\|?[\s:|-]+\|?[\s:|-]*\|\s*$/.test(l) && /-/.test(l);
+  const tableCells = (l: string) =>
+    l
+      .trim()
+      .replace(/^\||\|$/g, "")
+      .split("|")
+      .map((c) => c.trim());
+
+  type Segment =
+    | { kind: "md"; text: string }
+    | { kind: "table"; header: string[]; rows: string[][] };
+
+  const segments: Segment[] = (() => {
     const lines = data.answer.split("\n");
-    const out: string[] = [];
+    const segs: Segment[] = [];
+    let md: string[] = [];
+    const flushMd = () => {
+      if (md.length > 0) {
+        segs.push({ kind: "md", text: md.join("\n") });
+        md = [];
+      }
+    };
     let inFence = false;
     let i = 0;
-    const isPipeRow = (l: string) => /^\s*\|.*\|\s*$/.test(l);
-    const isDelimiter = (l: string) => /^\s*\|?[\s:|-]+\|?[\s:|-]*\|\s*$/.test(l) && /-/.test(l);
     while (i < lines.length) {
       const line = lines[i];
       if (/^\s*```/.test(line)) {
         inFence = !inFence;
-        out.push(line);
+        md.push(line);
         i++;
         continue;
       }
-      if (!inFence && isPipeRow(line) && i + 1 < lines.length && isDelimiter(lines[i + 1])) {
-        out.push("```text");
-        while (i < lines.length && (isPipeRow(lines[i]) || /^\s*$/.test(lines[i]))) {
-          if (isPipeRow(lines[i])) out.push(lines[i].trim());
+      if (!inFence && isPipeRow(line) && i + 1 < lines.length && isDelimiterRow(lines[i + 1])) {
+        flushMd();
+        const header = tableCells(line);
+        i += 2;
+        const rows: string[][] = [];
+        while (i < lines.length && isPipeRow(lines[i])) {
+          rows.push(tableCells(lines[i]));
           i++;
         }
-        out.push("```");
+        segs.push({ kind: "table", header, rows });
         continue;
       }
-      out.push(line);
+      md.push(line);
       i++;
     }
-    return out.join("\n");
+    flushMd();
+    return segs;
   })();
 
-  // Replace [N] with markdown superscript links (no raw HTML)
-  const processedAnswer = renderableAnswer.replace(
-    /\[(\d+)\]/g,
-    (_, num) => `[${num}](#citation-${num})`
-  );
+  // Replace [N] with citation links (no raw HTML); attach pills tightly to
+  // the preceding word so "Table 1 [1]" renders as "Table 1¹".
+  const citationify = (text: string) =>
+    text.replace(/\s*\[(\d+)\]/g, "[$1](#citation-$1)");
 
   const handleCopy = () => {
     const sourcesFooter =
@@ -158,8 +179,45 @@ const AnswerCard = ({ data, onRegenerate, onOpenSources }: AnswerCardProps) => {
 
       {/* Editorial answer body */}
       <div className="prose-journal text-[14px] sm:text-[15.5px] font-body leading-[1.7] max-w-none">
-        <ReactMarkdown
-          components={{
+        {segments.map((seg, idx) =>
+          seg.kind === "table" ? (
+            <div
+              key={idx}
+              className="overflow-x-auto my-3 rounded-lg border border-border/60 custom-scrollbar"
+            >
+              <table className="w-full text-[13.5px] border-collapse">
+                <thead className="bg-muted/60">
+                  <tr>
+                    {seg.header.map((h, j) => (
+                      <th
+                        key={j}
+                        className="text-left font-semibold text-foreground px-3 py-2 border-b border-border/60 whitespace-nowrap"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {seg.rows.map((row, r) => (
+                    <tr key={r} className="hover:bg-muted/30 transition-colors">
+                      {row.map((cell, c) => (
+                        <td
+                          key={c}
+                          className="px-3 py-2 border-b border-border/40 text-foreground/90 last:border-b-0"
+                        >
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <ReactMarkdown
+              key={idx}
+              components={{
             a: ({ children, href, ...props }) => {
               const isCitation = href?.startsWith('#citation-');
               if (isCitation) {
@@ -253,8 +311,10 @@ const AnswerCard = ({ data, onRegenerate, onOpenSources }: AnswerCardProps) => {
             ),
           }}
         >
-          {processedAnswer}
+          {citationify(seg.text)}
         </ReactMarkdown>
+          ),
+        )}
       </div>
 
       {/* Action toolbar */}

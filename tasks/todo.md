@@ -52,15 +52,15 @@
 - [ ] Abort/timeout/error-detail manually verified
 - [ ] Review with human before proceeding
 
-## Task 3: Markdown tables/code/lists in AnswerCard — DONE (except GFM tables need remark-gfm)
+## Task 3: Markdown tables/code/lists in AnswerCard — DONE
 
 **Description:** Add `table`, `pre/code`, `ul/ol`, `p`, `blockquote` renderers to the existing `ReactMarkdown` in `AnswerCard` using current Tailwind/shadcn tokens; no new markdown library.
 
 **Acceptance criteria:**
+- [x] Tables render as real styled tables (header row, zebra hover, horizontal scroll on mobile) — parsed from pipe blocks in `AnswerCard`, no `remark-gfm` needed
 - [x] Code blocks render as distinct blocks; inline code has chip styling (no new dep)
 - [x] Lists render with bullets/numbers; blockquotes with left border; paragraphs brightened to `text-foreground/90`
-- [x] Existing `[N]` citation pills still open `SourcesPanel` (pill markup simplified, alignment fixed)
-- [ ] Tables render as real tables — BLOCKED: needs `remark-gfm` (`package.json`, outside OpenCode perms). Shipped fallback: pipe-table blocks render as monospaced `text` code blocks instead of raw prose.
+- [x] Existing `[N]` citation pills still open `SourcesPanel` (pill markup simplified, alignment fixed, no stray space before pill)
 
 **Verification:**
 - [ ] Tests pass: `bun run test`

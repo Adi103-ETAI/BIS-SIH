@@ -36,7 +36,7 @@ sample_id = BIS-2024-001
 - Collect the sample as per IS 3025
 - Test in a BIS-recognised lab
 
-> Note: always verify against the current BIS catalogue before citing.`,
+> Tip: ask about a specific clause next, e.g. “What does clause 6.2 require?”, for exact limits.`,
   citations: [
     {
       index: 1,
