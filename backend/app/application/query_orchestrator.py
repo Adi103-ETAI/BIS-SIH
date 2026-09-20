@@ -20,6 +20,8 @@ STUB_MODE = "standard"
 
 
 class StubRagPipeline:
+    """Kept for reference; legacy path now serves the file-backed RAG below."""
+
     async def run(self, query: str, top_k: int) -> SearchResponse:
         await asyncio.sleep(0)  # yield point where retrieval/generation will go
         return SearchResponse(
@@ -33,10 +35,15 @@ class StubRagPipeline:
 
 
 async def answer_query(query: str, top_k: int) -> SearchResponse:
+    """Stage 3: real (extractive) RAG over published file-backed knowledge."""
+    from app.application.rag_orchestrator import RagOrchestrator
+    from app.infra.knowledge_store import get_store
+
     start = time.monotonic()
     try:
         result = await asyncio.wait_for(
-            StubRagPipeline().run(query, top_k), timeout=SEARCH_TIMEOUT_SECONDS
+            asyncio.to_thread(RagOrchestrator(get_store()).answer, query, top_k),
+            timeout=SEARCH_TIMEOUT_SECONDS,
         )
     except asyncio.TimeoutError:
         raise TimeoutError("search timed out")

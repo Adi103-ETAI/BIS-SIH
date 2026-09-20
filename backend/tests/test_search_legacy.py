@@ -35,9 +35,10 @@ def test_api_leg_002_top_k_defaults_and_limits():
 def test_api_leg_003_empty_state_is_200():
     r = _search({"query": "unindexed query"}, ip="leg-3")
     assert r.status_code == 200
-    assert r.json()["chunks_retrieved"] == 0
-    assert r.json()["answer"] == ""
-    assert r.json()["citations"] == []
+    body = r.json()
+    assert body["chunks_retrieved"] == 0
+    assert body["citations"] == []
+    assert "[" not in body["answer"]  # no orphan markers in empty/insufficient-evidence state
 
 
 def test_api_leg_004_detail_error_shape():

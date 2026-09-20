@@ -17,3 +17,13 @@ uv run uvicorn app.main:app --port 8000  # matches frontend proxy default 127.0.
 ## Layout (docs/03 §8)
 
 `app/{api,application,domain,infra,core}` · `worker/` (Stage 3+) · `migrations/` (Alembic) · `tests/`
+
+## Stage 3 notes
+
+- Retrieval is lexical over published file-backed knowledge (`data/*.json`,
+  illustrative seeds auto-created). Dense vectors + pgvector arrive with the
+  compose stack + OD-008; the `KnowledgeStore`/`EmbeddingProvider` ports keep
+  that swap clean.
+- Generation is extractive (`ExtractiveComposer`); an LLM plugs into the
+  `Generator` port at OD-007 with no route changes.
+- Admin knowledge endpoints are open in dev; Stage 4 gates them with sessions.

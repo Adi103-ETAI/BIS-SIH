@@ -5,6 +5,7 @@ from fastapi.exceptions import RequestValidationError
 
 from app.api.middleware import RequestIdMiddleware
 from app.api.routes_health import router as health_router
+from app.api.routes_knowledge import router as knowledge_router
 from app.api.routes_search import router as search_router
 from app.core.errors import legacy_error, unhandled_exception_handler
 from app.core.logging import configure_logging
@@ -29,6 +30,7 @@ def create_app() -> FastAPI:
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
     app.include_router(health_router)
     app.include_router(search_router)
+    app.include_router(knowledge_router)
     return app
 
 
