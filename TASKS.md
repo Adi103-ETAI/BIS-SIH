@@ -12,6 +12,7 @@ One agent per file at a time. If your target file is already In Progress, stop a
 -->
 
 ## 🟢 Completed (keep last 10)
+- [x] Agent: OpenCode | Files: backend/ | Task: Stage 2 /search compatibility — frozen contract, stub RAG, rate limits, API-LEG-001..006 (9 tests green), proxy conformance via :3000 | Commit: STAGE2
 - [x] Agent: OpenCode | Files: backend/ | Task: Stage 1 backend foundation — FastAPI skeleton, health/readiness, request-id, error envelope, tests (3 passed), compose defined-not-run | Commit: STAGE1
 - [x] Agent: OpenCode | Files: src/, public/, README.md, AGENTS.md | Task: Convert OpenInsight medical app to BIS Chat (BIS/ISO/IEC sources, standards copy, hexagon-seal logo) | Commit: 0fbe8b1
 - [x] Agent: Antigravity | Files: src/ | Task: Convert new Vite code from main branch to Next.js framework | Commit: 6fe6995
