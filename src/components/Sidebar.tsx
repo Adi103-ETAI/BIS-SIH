@@ -10,7 +10,7 @@ import type { HistoryEntry } from "@/hooks/use-store";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import avatar1 from "@/assets/avatar_1.png";
-import newChatIcon from "@/assets/new-chat-icon-03.png";
+import newChatIcon from "@/assets/new-chat-icon-01.png";
 
 interface SidebarProps {
   isOpen: boolean;
