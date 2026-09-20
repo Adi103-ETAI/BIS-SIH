@@ -6,13 +6,18 @@ from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from app.core.settings import get_settings
 from app.domain.auth import Base
 
 
 def database_url() -> str:
-    url = os.environ.get("BIS_DATABASE_URL", "")
+    url = os.environ.get("BIS_DATABASE_URL", "") or get_settings().database_url
     if url:
-        return url
+        # Supabase dashboard pastes postgresql:// (psycopg2); we ship psycopg v3.
+        if url.startswith("postgresql://"):
+            url = "postgresql+psycopg://" + url[len("postgresql://"):]
+        if url.startswith("postgresql"):
+            return url
     data = Path(__file__).resolve().parents[2] / "data"
     data.mkdir(parents=True, exist_ok=True)
     return f"sqlite:///{data}/app.db"
@@ -25,11 +30,23 @@ def get_engine(echo: bool = False):
 
 
 def init_db(engine=None) -> None:
-    """create_all + role seeds. Alembic owns schema evolution once Supabase lands."""
+    """create_all + role seeds. Alembic owns schema evolution once Supabase lands.
+
+    Never crashes boot: if the database is unreachable the app still starts and
+    /api/v1/health reports degraded until it is.
+    """
+    import logging
+
+    from sqlalchemy.exc import OperationalError
+
     from app.domain.auth import ROLES, Role
 
     engine = engine or get_engine()
-    Base.metadata.create_all(engine)
+    try:
+        Base.metadata.create_all(engine)
+    except OperationalError as exc:
+        logging.getLogger(__name__).warning("database unreachable, skipping init: %s", exc)
+        return
     Session = sessionmaker(bind=engine)
     with Session() as db:
         existing = {r.code for r in db.query(Role).all()}

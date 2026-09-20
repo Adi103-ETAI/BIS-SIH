@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="BIS_", env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_prefix="BIS_", env_file=(".env.local", ".env"), extra="ignore")
 
     app_name: str = "bis-ai-backend"
     environment: str = "dev"  # dev | staging | prod
