@@ -1,0 +1,24 @@
+# Dev stack per docs/20_DEPLOYMENT.md §1. Defined now, run from Stage 2+.
+# NOTE (low-RAM machines): postgres+redis+minio idle ≈ 300-500 MB.
+# Start only when a stage needs it: docker compose up -d postgres redis
+name: bis-ai
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: bis
+      POSTGRES_PASSWORD: bis
+      POSTGRES_DB: bis
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    ports: ["9000:9000", "9001:9001"]
+    volumes: ["miniodata:/data"]
+volumes:
+  pgdata:
+  miniodata:
