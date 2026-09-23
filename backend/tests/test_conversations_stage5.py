@@ -17,14 +17,9 @@ def c(tmp_path, monkeypatch):
     from sqlalchemy import create_engine as _ce
 
     engine = _ce(f"sqlite:///{tmp_path}/conv.db", connect_args={"check_same_thread": False})
-    Base.metadata.create_all(engine)
-    from app.domain.auth import ROLES, Role
+    from app.infra.db import init_db
 
-    Session = session_factory(engine)
-    with Session() as s:
-        for code in ROLES:
-            s.add(Role(code=code, description=code))
-        s.commit()
+    init_db(engine)
     from app.infra import db as db_module
 
     real_sf = db_module.session_factory

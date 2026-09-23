@@ -41,6 +41,7 @@ def init_db(engine=None) -> None:
 
     from app.domain.auth import ROLES, Role
 
+    import app.domain.catalogue  # noqa: F401 (register tables before create_all)
     import app.domain.conversation  # noqa: F401 (register tables before create_all)
 
     engine = engine or get_engine()
@@ -56,6 +57,9 @@ def init_db(engine=None) -> None:
             if code not in existing:
                 db.add(Role(code=code, description=f"{code} role"))
         db.commit()
+        from app.infra.seeds_services import seed_catalogue
+
+        seed_catalogue(db)
 
 
 def session_factory(engine=None):

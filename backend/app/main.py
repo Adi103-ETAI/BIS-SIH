@@ -7,6 +7,7 @@ from app.api.middleware import RequestIdMiddleware
 from app.api.middleware_csrf import CsrfMiddleware
 from app.api.routes_auth import router as auth_router
 from app.api.routes_conversations import router as conversations_router
+from app.api.routes_services import router as services_router
 from app.api.routes_health import router as health_router
 from app.api.routes_knowledge import router as knowledge_router
 from app.api.routes_search import router as search_router
@@ -35,6 +36,7 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(auth_router)
     app.include_router(conversations_router)
+    app.include_router(services_router)
     app.include_router(search_router)
     app.include_router(knowledge_router)
     return app
