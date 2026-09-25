@@ -20,3 +20,15 @@ class Generator(Protocol):
 class KnowledgeStore(Protocol):
     def published_chunks(self) -> list[DocumentChunk]: ...
     def chunk_by_id(self, chunk_id: str) -> DocumentChunk | None: ...
+
+
+class VectorStore(Protocol):
+    """Dense retrieval over pgvector (docs/07 §5). File store covers dev/test."""
+
+    dim: int
+
+    def upsert(self, chunks: list[DocumentChunk], vectors: list[list[float]],
+               model: str) -> int: ...
+    def search(self, vector: list[float], top_k: int,
+               version_ids: list[str] | None = None) -> list[tuple[str, float]]: ...
+    """Returns (chunk_id, cosine_distance) ascending — caller maps to chunks."""
