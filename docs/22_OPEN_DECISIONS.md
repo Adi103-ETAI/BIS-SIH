@@ -1,0 +1,40 @@
+# 22 — Open Decisions Register
+
+**Rule (prompt §26):** no invented answers. Every entry records what is unknown, why it matters, options, the temporary assumption the architecture proceeds with, impact, owner, and whether it blocks implementation. Statuses: `OPEN` / `DECIDED (revisit)` / `ASSUMED (unverified)` / `EXTERNAL — TBD / requires verification`.
+**Owner column:** `Team` = project team decision; `Admin-content` = content/editorial decision; `External` = depends on outside party.
+
+| ID | Decision | Status | Options | Recommendation / temporary assumption | Impact if wrong | Owner | Blocking? |
+|---|---|---|---|---|---|---|---|
+| OD-001 | What exactly powers the existing `POST /search` (framework, hosting, auth)? | OPEN (UNKNOWN) | reuse existing service; rebuild in new backend; hybrid | Architecture assumes **rebuild** behind the same path (Stage 2); the old service remains untouched until parity (analysis §8: upstream UNDETERMINED) | Low (contract frozen either way) | Team | No (Stage 2 starts from contract, not internals) |
+| OD-002 | Is an existing RAG backend available for reuse? | OPEN (UNKNOWN) | reuse; rebuild; reuse parts (corpus/embeddings) | Proceed as **greenfield** RAG (Stage 3); if a corpus exists, import it via ingestion (09) | Medium (duplicate ingestion work) | Team | No |
+| OD-003 | What does `mongo_id` represent? | OPEN (UNKNOWN) | MongoDB `_id` from a legacy store; random trace id; chunk hash | Treat as **opaque legacy alias of chunk_id**; backend emits `document_chunks.id` string; frontend unaffected (04 §4.3, 07 §11.1) | Low (additive rename path exists) | Team | No |
+| OD-004 | What does citation `score` represent today? | OPEN (UNKNOWN) | cosine similarity; fused rank score; rerank score | Backend defines it as the **final ranking score** (relevance bar semantics) and additionally emits `retrieval_score`/`rerank_score` (07 §11.2) | Low | Team | No |
+| OD-005 | What does frontend `model: "nim"` mean? | OPEN (UNKNOWN) | NVIDIA NIM endpoint was used; arbitrary scaffold string | Treat as legacy display value; backend returns configured model id (02 §3) | Low | Team | No |
+| OD-006 | What does `mode: "standard"` mean? | OPEN (UNKNOWN) | RAG mode flag; UI scaffold | Treated as scaffold; backend echoes its configured mode value | Low | Team | No |
+| OD-007 | Which LLM will be used? | OPEN | NVIDIA NIM; OpenAI-compatible cloud; self-hosted (vLLM); Indian-provider endpoint | **ASSUMED:** any OpenAI-compatible endpoint behind `LlmGateway`; config-driven (02 §7, 07 §3) | Low (interface isolates) | Team | Yes for Stage 3 |
+| OD-008 | Which embedding model? | OPEN | bge-m3; multilingual-e5; provider-hosted; NVIDIA NIM embedding | **ASSUMED:** multilingual-capable model, `EMBEDDING_DIM` parameterized (04 §4.3); re-embed migration documented (09 §6) | Medium (dimension + quality) | Team | Yes for Stage 3 |
+| OD-009 | Which vector database (product)? | DECIDED (revisit at scale) | pgvector; Qdrant; Milvus; managed vector service | **pgvector** (ADR-02) | Medium at >10⁶ chunks | Team | No |
+| OD-010 | PostgreSQL+pgvector vs separate vector DB? | DECIDED (revisit) | integrated; separate | **pgvector** for MVP; extraction path documented (03 §7 ADR-02, 20 §10) | Medium | Team | No |
+| OD-011 | Authentication mechanism (final)? | DECIDED for prototype | session cookies (chosen); JWT; OIDC; external IdP | **Session cookies** (06 §2); JWT/OIDC migration path §8 | Low | Team | Yes for Stage 4 |
+| OD-012 | Anonymous search policy + server-side conversation persistence? | Partly DECIDED | chat behind login; open search + authed features; persistence now vs later | **Persistence: DECIDED YES** (Stage 5, 10 §8). **Anonymous search: keep open during migration** (legacy `/search` stays public; v1 policy revisited after pilot) | Low | Team | No |
+| OD-013 | First BIS services to support? | OPEN | product certification; hallmarking; laboratory recognition; consumer services | Seed **one illustrative** service (12 §7); real first service is a team/content decision before Stage 6 content work | Medium (content plan) | Team + Admin-content | Yes before Stage 6 content |
+| OD-014 | Which actual BIS forms should be modelled (real schemas)? | OPEN | obtain official form/field lists; model from public PDFs with citations | Do **not** model real rules until verified sources exist (RULE 3); placeholder schema only (13 §8) | High (legal/accuracy) | External + Admin-content | Yes before real-service launch (not before Stage 7 build) |
+| OD-015 | Are official BIS APIs available / is any integration permitted? | OPEN — EXTERNAL, TBD / requires verification | none; public downloads; partnership APIs | Assume **none**; everything behind `ExternalBisAdapter` NoOp (12 §9); no claims of official integration (RULE 4) | High if discovered late | External | No (architecture indifferent) |
+| OD-016 | How will official knowledge sources be acquired? | OPEN | manual downloads (admin); verified copies; curated summaries; partnerships | **Manual admin acquisition** with source trust levels (08 §4–6); no crawlers in MVP | Medium (corpus coverage) | Admin-content | Yes for meaningful Stage 3 eval |
+| OD-017 | What citation granularity is actually available in sources? | OPEN | page+clause extractable; page only; text only | Pipeline stores **only detected** structure metadata (09 §1); UI degrades gracefully (07 §11.2) | Low (additive fields) | Admin-content | No |
+| OD-018 | Multilingual: MVP or future? | DECIDED | English-only MVP; English+Hindi MVP; full multilingual | **English MVP**; design for multilingual (07 §16) | Low | Team | No |
+| OD-019 | Is streaming required? | DECIDED | now; later | **Post-MVP** (10 §7; UI cannot render streams today); endpoint reserved (05 §5.4) | Low | Team | No |
+| OD-020 | OCR engine for scanned PDFs? | OPEN | Tesseract (self-host); cloud OCR; skip scanned docs in MVP | Adapter interface now; **start with digital-PDF-only scope**, clean failure for scans (09 §4) | Low–Medium | Team | No |
+| OD-021 | What external integrations are actually available? | OPEN — EXTERNAL | none; email; SMS; gov gateways | Assume **none beyond email** in MVP (02 §7); adapter boundary for all else | Low | External | No |
+| OD-022 | Email delivery provider (password reset)? | OPEN | SMTP relay; transactional API (SES-class); console-dev adapter | `MailAdapter` with console adapter in dev; provider choice at Stage 4 | Low | Team | Yes for prod password reset |
+| OD-023 | Email verification at signup? | OPEN | required; optional post-MVP | **Post-MVP toggle** (06 §3.1); schema ready (`users.status`) | Low | Team | No |
+| OD-024 | Data retention windows (conversations, drafts, search logs)? | OPEN | 90/180/365 days; policy-driven | Defaults: conversations 365 d inactive purge; drafts 180 d (NFR-010); search logs 90 d; audit ≥ 1 y — configurable | Low (privacy posture) | Team | No |
+| OD-025 | Deployment environment target (SIH demo hosting)? | OPEN | single VM; campus cloud; Indian cloud region; managed PaaS | Design supports any (20 §1); decide at Stage 12 based on cost/access | Low | Team | Yes before Stage 12 |
+
+## Detail Notes (highest-impact items)
+
+**OD-007/OD-008 (LLM & embeddings):** both are interface-isolated; blocking only Stage 3. Selection criteria to record when decided: multilingual capability (future Hindi), context window ≥ 8k, cost per 1k tokens, data-residency posture, latency profile. The golden eval set (19 §3.4) is the acceptance instrument for any provider swap.
+
+**OD-013/OD-014 (services & forms):** product-critical but content decisions. The architecture deliberately unblocks engineering (Stages 6–7 build the generic machinery against the illustrative seed). When real forms arrive: ingest source documents → create real service version + form version with `source_refs` → publish. No code changes expected (12 §6 test).
+
+**OD-015/OD-021 (external):** treated as "TBD / requires verification" everywhere; the system never describes itself as officially integrated with BIS, and all external actions remain manual in MVP (RULE 3/4; principle #20).
