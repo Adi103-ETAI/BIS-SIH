@@ -57,6 +57,7 @@ def seed_catalogue(db) -> bool:  # type: ignore[no-untyped-def]
         return False
     for key, name in CATEGORIES:
         db.add(ServiceCategory(key=key, name=name))
+    db.flush()  # categories must exist before services reference them (PG enforces FKs)
     now = datetime.utcnow()
     for svc, ver in SERVICES:
         db.add(Service(status="published", current_version_number=1,

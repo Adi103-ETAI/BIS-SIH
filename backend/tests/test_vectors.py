@@ -13,6 +13,10 @@ from app.infra.vector_store import PgVectorStore, similarity_query
 
 def _pg_url() -> str:
     url = os.environ.get("BIS_DATABASE_URL", "")
+    if not url:
+        from app.core.settings import get_settings
+
+        url = get_settings().database_url
     if url.startswith("postgresql://"):
         url = "postgresql+psycopg://" + url[len("postgresql://"):]
     return url
