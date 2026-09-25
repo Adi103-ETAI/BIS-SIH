@@ -17,10 +17,11 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
     s3_endpoint_url: str = "http://localhost:9000"
 
-    # Provider gateways (OD-007/008 — unresolved; used from Stage 3)
-    llm_base_url: str = ""
+    # Provider gateways: OpenRouter (OpenAI-compatible) + free providers (OD-007).
+    llm_base_url: str = "https://openrouter.ai/api/v1"
     llm_api_key: str = ""
-    embedding_model: str = ""
+    llm_model: str = ""
+    embedding_model: str = "BAAI/bge-m3"  # OD-008: best practical pick, GPU-batch on Kaggle
     embedding_dim: int = 1024
 
     # Upstash Redis (REST). Empty = in-memory fallback (single-process dev).
