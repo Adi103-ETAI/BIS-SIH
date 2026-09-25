@@ -1,12 +1,11 @@
-"""Export chunks awaiting vectors: published chunks with no embedding yet.
+"""Export published file-store chunks for Kaggle embedding.
 
-Run against the backend DB (Supabase pooler when live, SQLite dev file ok
-for the export side — vectors join later by chunk id):
+Source of truth for chunk TEXT is the file store (admin uploads land there).
+The loader inserts text+vector together into pgvector, keyed by chunk id.
 
-    BIS_DATABASE_URL=<db> uv run python scripts/export_chunks.py > chunks.jsonl
+    uv run python scripts/export_chunks.py > chunks.jsonl
 
-Output: one JSON object per line: {"id": ..., "text": ...}.
-Upload chunks.jsonl to Kaggle alongside kaggle/embed_job.py.
+Output per line: {"id","document_id","version_id","text","section","ordinal"}.
 """
 
 import json
@@ -14,40 +13,18 @@ import sys
 
 sys.path.insert(0, ".")
 
-from app.infra.db import get_engine, init_db  # noqa: E402
 from app.infra.knowledge_store import FileKnowledgeStore  # noqa: E402
 
 
 def main() -> None:
-    try:
-        engine = get_engine()
-        init_db(engine)
-        from sqlalchemy import text as _text
-
-        with engine.connect() as conn:
-            has_table = conn.execute(
-                _text("SELECT 1 FROM document_chunks LIMIT 1")
-            )
-            _ = has_table
-            pg_mode = True
-    except Exception:
-        pg_mode = False
-
-    if pg_mode:
-        from sqlalchemy import text
-
-        with engine.connect() as conn:
-            rows = conn.execute(
-                text("SELECT id, chunk_text FROM document_chunks WHERE embedding IS NULL")
-            ).all()
-        for chunk_id, chunk_text in rows:
-            print(json.dumps({"id": chunk_id, "text": chunk_text}))
-        return
-
-    # File-store fallback (dev): export published chunks not yet tracked.
     store = FileKnowledgeStore()
+    n = 0
     for chunk in store.published_chunks():
-        print(json.dumps({"id": chunk.id, "text": chunk.chunk_text}))
+        print(json.dumps({"id": chunk.id, "document_id": chunk.document_id,
+                          "version_id": chunk.version_id, "text": chunk.chunk_text,
+                          "section": chunk.section, "ordinal": chunk.ordinal}))
+        n += 1
+    print(f"exported {n} chunks", file=sys.stderr)
 
 
 if __name__ == "__main__":

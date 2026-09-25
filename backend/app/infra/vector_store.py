@@ -23,30 +23,42 @@ class PgVectorStore:
         self.dim = dim
         self.table = table
 
-    def upsert(self, chunks, vectors, model: str) -> int:  # type: ignore[no-untyped-def]
+    def upsert(self, chunks, vectors, model: str, batch: int = 200) -> int:  # type: ignore[no-untyped-def]
         if len(chunks) != len(vectors):
             raise ValueError("chunks and vectors length mismatch")
-        for chunk, vector in zip(chunks, vectors):
+        for vector in vectors:
             if len(vector) != self.dim:
-                raise ValueError(f"expected dim {self.dim}, got {len(vector)}")
+                raise ValueError(f"expected dim {self.dim}")
         rows = 0
         with self.engine.begin() as conn:
-            for chunk, vector in zip(chunks, vectors):
+            for i in range(0, len(chunks), batch):
+                group = list(zip(chunks[i:i + batch], vectors[i:i + batch]))
+                values = ", ".join(
+                    f"(:id{j}, :doc{j}, :ver{j}, :text{j}, :sec{j}, :ord{j}, "
+                    f"CAST(:vec{j} AS vector), :model{j})"
+                    for j in range(len(group))
+                )
+                params: dict = {}
+                for j, (chunk, vector) in enumerate(group):
+                    params.update({
+                        f"id{j}": chunk.id, f"doc{j}": chunk.document_id,
+                        f"ver{j}": chunk.version_id, f"text{j}": chunk.chunk_text,
+                        f"sec{j}": chunk.section, f"ord{j}": chunk.ordinal,
+                        f"vec{j}": "[" + ",".join(map(str, vector)) + "]",
+                        f"model{j}": model,
+                    })
                 conn.execute(
                     text(
-                        "INSERT INTO " + self.table + " "
+                        f"INSERT INTO {self.table} "
                         "(id, document_id, version_id, chunk_text, section, ordinal, "
                         " embedding, embedding_model) "
-                        "VALUES (:id, :doc, :ver, :text, :sec, :ord, "
-                        " CAST(:vec AS vector), :model) "
+                        f"VALUES {values} "
                         "ON CONFLICT (id) DO UPDATE SET embedding = EXCLUDED.embedding, "
                         "embedding_model = EXCLUDED.embedding_model"
                     ),
-                    {"id": chunk.id, "doc": chunk.document_id, "ver": chunk.version_id,
-                     "text": chunk.chunk_text, "sec": chunk.section, "ord": chunk.ordinal,
-                     "vec": "[" + ",".join(map(str, vector)) + "]", "model": model},
+                    params,
                 )
-                rows += 1
+                rows += len(group)
         return rows
 
     def search(self, vector: list[float], top_k: int,

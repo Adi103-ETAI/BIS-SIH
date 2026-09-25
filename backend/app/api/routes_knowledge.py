@@ -77,8 +77,8 @@ async def upload_document(
     if not name.lower().endswith((".txt", ".md", ".pdf")):
         return JSONResponse(status_code=422, content={"detail": "only .txt, .md, .pdf accepted"})
     raw = await file.read()
-    if len(raw) > 5 * 1024 * 1024:
-        return JSONResponse(status_code=422, content={"detail": "file too large (5 MB max)"})
+    if len(raw) > 25 * 1024 * 1024:
+        return JSONResponse(status_code=422, content={"detail": "file too large (25 MB max)"})
     if name.lower().endswith(".pdf"):
         try:
             from pypdf import PdfReader
