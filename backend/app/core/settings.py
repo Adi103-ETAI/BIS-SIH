@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     app_name: str = "bis-ai-backend"
     environment: str = "dev"  # dev | staging | prod
     log_level: str = "INFO"
+    testing: bool = False  # BIS_TESTING=1: lexical-only, extractive-only, no provider calls
 
     # Data layer (wired in later stages; health reflects reachability)
     database_url: str = "postgresql+psycopg://bis:bis@localhost:5432/bis"
@@ -23,6 +24,7 @@ class Settings(BaseSettings):
     llm_model: str = ""
     embedding_model: str = "BAAI/bge-m3"  # OD-008: best practical pick, GPU-batch on Kaggle
     embedding_dim: int = 1024
+    hf_api_token: str = ""  # query-time embeddings via HF Inference (same model => same space)
 
     # Upstash Redis (REST). Empty = in-memory fallback (single-process dev).
     upstash_redis_rest_url: str = ""

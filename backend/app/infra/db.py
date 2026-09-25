@@ -24,9 +24,17 @@ def database_url() -> str:
 
 
 def get_engine(echo: bool = False):
+    from sqlalchemy.pool import NullPool
+
     url = database_url()
-    connect_args = {"check_same_thread": False} if url.startswith("sqlite") else {}
-    return create_engine(url, connect_args=connect_args, echo=echo, pool_pre_ping=True)
+    if url.startswith("sqlite"):
+        return create_engine(url, connect_args={"check_same_thread": False},
+                             echo=echo, pool_pre_ping=True)
+    # Supabase pooler (pgbouncer, transaction mode) owns pooling server-side:
+    # NullPool here, and never auto-prepare (recycled server sessions may
+    # already hold that prepared-statement name).
+    return create_engine(url, connect_args={"prepare_threshold": None},
+                         poolclass=NullPool, echo=echo)
 
 
 def init_db(engine=None) -> None:

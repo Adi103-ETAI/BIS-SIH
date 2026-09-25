@@ -34,9 +34,18 @@ def lexical_score(query_tokens: set[str], chunk_tokens: set[str]) -> float:
 
 
 class RagOrchestrator:
-    def __init__(self, store, composer: ExtractiveComposer | None = None) -> None:
+    def __init__(self, store, composer=None) -> None:  # type: ignore[no-untyped-def]
+        from app.core.settings import get_settings
+        from app.infra.generation import ExtractiveComposer
+        from app.infra.llm import OpenRouterGenerator, generator_configured
+
         self.store = store
-        self.composer = composer or ExtractiveComposer()
+        if composer is not None:
+            self.composer = composer
+        elif not get_settings().testing and generator_configured():
+            self.composer = OpenRouterGenerator()
+        else:
+            self.composer = ExtractiveComposer()
 
     def retrieve(self, query: str, top_k: int) -> list[tuple[DocumentChunk, float]]:
         qtokens = tokenize(query)
@@ -49,18 +58,24 @@ class RagOrchestrator:
         return scored[:top_k]
 
     def answer(self, query: str, top_k: int) -> SearchResponse:
-        hits = self.retrieve(query.strip(), top_k)
+        hits = self.hybrid_retrieve(query.strip(), top_k)
         if not hits:
             return SearchResponse(
                 answer=INSUFFICIENT_EVIDENCE_ANSWER,
                 citations=[],
                 chunks_retrieved=0,
                 query=query.strip(),
-                model="extractive",
+                model=self._model_name(),
                 mode="standard",
             )
         evidence = [c for c, _ in hits]
-        answer = self.composer.generate(query.strip(), evidence)
+        try:
+            answer = self.composer.generate(query.strip(), evidence)
+        except Exception:
+            # Provider outage/rate-limit: grounded extractive fallback, same evidence.
+            from app.infra.generation import ExtractiveComposer
+
+            answer = ExtractiveComposer().generate(query.strip(), evidence)
         citations = [
             Citation(
                 index=i,
@@ -72,15 +87,77 @@ class RagOrchestrator:
             )
             for i, (c, s) in enumerate(hits, start=1)
         ]
-        validated = self.validate_citations(answer, citations)
+        try:
+            validated = self.validate_citations(answer, citations)
+        except AssertionError:
+            # LLM emitted unmappable markers: fall back to extractive over the
+            # same evidence (markers provably valid) rather than failing.
+            from app.infra.generation import ExtractiveComposer
+
+            answer = ExtractiveComposer().generate(query.strip(), evidence)
+            validated = self.validate_citations(answer, citations)
         return SearchResponse(
             answer=answer,
             citations=validated,
             chunks_retrieved=len(hits),
             query=query.strip(),
-            model="extractive",
+            model=self._model_name(),
             mode="standard",
         )
+
+    def _model_name(self) -> str:
+        from app.infra.llm import OpenRouterGenerator
+
+        if isinstance(self.composer, OpenRouterGenerator):
+            return self.composer.model or "llm"
+        return "extractive"
+
+    def hybrid_retrieve(self, query: str, top_k: int) -> list[tuple[DocumentChunk, float]]:
+        """RRF fusion (k=60) of dense pgvector + lexical pools (docs/07 §5)."""
+        pool = max(top_k * 3, 10)
+        lexical = self.retrieve(query, pool)
+        dense = self._dense_retrieve(query, pool)
+        if not dense:
+            return lexical[:top_k]
+        fused: dict[str, float] = {}
+        chunks: dict[str, DocumentChunk] = {}
+        for rank, (chunk, _) in enumerate(lexical):
+            fused[chunk.id] = fused.get(chunk.id, 0.0) + 1.0 / (60 + rank)
+            chunks[chunk.id] = chunk
+        for rank, (chunk, _) in enumerate(dense):
+            fused[chunk.id] = fused.get(chunk.id, 0.0) + 1.0 / (60 + rank)
+            chunks[chunk.id] = chunk
+        ranked = sorted(fused.items(), key=lambda kv: kv[1], reverse=True)[:top_k]
+        return [(chunks[cid], score) for cid, score in ranked]
+
+    def _dense_retrieve(self, query: str, pool: int) -> list[tuple[DocumentChunk, float]]:
+        try:
+            from app.core.settings import get_settings
+
+            if get_settings().testing:
+                return []
+            from app.infra.db import get_engine
+            from app.infra.embeddings import get_embedding_provider
+            from app.infra.vector_store import PgVectorStore
+
+            provider = get_embedding_provider()
+            if provider.dim == 0:
+                return []
+            vector = provider.embed([query])[0]
+            versions = [v.id for v in self.store.versions.values() if v.status == "published"]
+            if not versions:
+                return []
+            settings = get_settings()
+            hits = PgVectorStore(get_engine(), dim=settings.embedding_dim).search(
+                vector, pool, versions)
+            out = []
+            for chunk_id, distance in hits:
+                chunk = self.store.chunk_by_id(chunk_id)
+                if chunk is not None:
+                    out.append((chunk, 1.0 / (1.0 + distance)))
+            return out
+        except Exception:
+            return []  # dense is an enhancement; lexical carries on
 
     @staticmethod
     def validate_citations(answer: str, citations: list[Citation]) -> list[Citation]:
