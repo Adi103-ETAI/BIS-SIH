@@ -59,8 +59,12 @@ def test_live_upsert_search_roundtrip():
     with engine.begin() as c:
         c.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         c.execute(text("DROP TABLE IF EXISTS scratch_vec"))
-        c.execute(text("CREATE TABLE scratch_vec (LIKE document_chunks INCLUDING ALL)"))
-    store = PgVectorStore(engine, dim=3)
+        c.execute(text(
+            "CREATE TABLE scratch_vec (id TEXT PRIMARY KEY, document_id TEXT, "
+            "version_id TEXT, chunk_text TEXT, section TEXT DEFAULT '', "
+            "ordinal INTEGER DEFAULT 0, embedding vector(3), embedding_model TEXT DEFAULT '')"
+        ))
+    store = PgVectorStore(engine, dim=3, table="scratch_vec")
     chunks = [DocumentChunk(id="s1", document_id="d", version_id="v",
                             chunk_text="hello world", ordinal=0)]
     assert store.upsert(chunks, [[1.0, 0.0, 0.0]], model="test") == 1

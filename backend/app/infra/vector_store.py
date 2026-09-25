@@ -8,19 +8,20 @@ server-side), so withdrawn drafts can never surface through this path.
 from sqlalchemy import text
 
 
-def similarity_query() -> str:
+def similarity_query(table: str = "document_chunks") -> str:
     return (
         "SELECT id, embedding <=> CAST(:vector AS vector) AS distance "
-        "FROM document_chunks "
+        f"FROM {table} "
         "WHERE embedding IS NOT NULL AND version_id = ANY(:versions) "
         "ORDER BY distance ASC LIMIT :top_k"
     )
 
 
 class PgVectorStore:
-    def __init__(self, engine, dim: int) -> None:
+    def __init__(self, engine, dim: int, table: str = "document_chunks") -> None:
         self.engine = engine
         self.dim = dim
+        self.table = table
 
     def upsert(self, chunks, vectors, model: str) -> int:  # type: ignore[no-untyped-def]
         if len(chunks) != len(vectors):
@@ -33,7 +34,7 @@ class PgVectorStore:
             for chunk, vector in zip(chunks, vectors):
                 conn.execute(
                     text(
-                        "INSERT INTO document_chunks "
+                        "INSERT INTO " + self.table + " "
                         "(id, document_id, version_id, chunk_text, section, ordinal, "
                         " embedding, embedding_model) "
                         "VALUES (:id, :doc, :ver, :text, :sec, :ord, "
@@ -54,7 +55,7 @@ class PgVectorStore:
             raise ValueError(f"expected dim {self.dim}, got {len(vector)}")
         with self.engine.connect() as conn:
             result = conn.execute(
-                text(similarity_query()),
+                text(similarity_query(self.table)),
                 {"vector": "[" + ",".join(map(str, vector)) + "]",
                  "versions": version_ids or [], "top_k": top_k},
             )
